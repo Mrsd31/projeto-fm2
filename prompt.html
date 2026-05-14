@@ -1,0 +1,57 @@
+Prompt: Arquitetura de PDV Farmacêutico (Full Stack)
+Contexto: Preciso da estrutura inicial de um sistema de PDV para farmácia, focado em alta performance e segurança. O sistema deve ser dividido em Frontend (Interface do Operador) e Backend (Lógica de Negócio e Fiscal).
+
+Parte 1: Frontend (Interface do Usuário)
+Quero o código base utilizando HTML5, CSS3 (Moderno) e JavaScript (ES6+).
+
+HTML: Estrutura semântica com foco em acessibilidade. Deve conter seções para: Busca de produtos, Carrinho de compras lateral, Resumo de valores (Subtotal, Descontos, Total) e Painel de Atalhos.
+
+CSS: Layout responsivo (Grid/Flexbox) com estética "Clean Medical" (paleta de azuis, brancos e cinzas claros). Use variáveis CSS para cores e fontes. Garanta que o estado visual de "Medicamento Controlado" seja destacado em vermelho.
+
+JavaScript: Lógica funcional para:
+
+Manipulação do DOM para adicionar produtos ao carrinho.
+
+Cálculo automático de impostos e descontos em tempo real.
+
+Escuta de eventos de teclado (ex: F2 para finalizar venda, F4 para buscar cliente).
+
+Simulação de chamadas fetch() para o backend.
+
+Parte 2: Backend (Lógica e Persistência)
+Descreva a lógica do servidor (pode ser em Node.js, Python ou C#) focando em:
+
+Estrutura de API: Defina os endpoints principais:
+
+GET /produtos?search={termo} (Busca com filtro de estoque).
+
+POST /vendas (Processamento de venda e baixa no estoque).
+
+GET /receitas/validar (Check de validade de receitas digitais).
+
+Regras de Negócio: Como o backend deve validar a venda de medicamentos controlados (exigência de CRM do médico e CPF do comprador).
+
+Banco de Dados: Sugira um esquema de tabelas (SQL) para Produtos, Lotes (com data de validade) e Vendas_Itens.
+
+Parte 3: Integração Fiscal e Segurança
+Explique como o sistema deve lidar com o SNGPC (Anvisa) no backend.
+
+Como estruturar o envio do XML para a NFC-e após a confirmação do pagamento no frontend.
+
+Exemplo de Estrutura de Pastas Esperada:
+Para organizar o projeto, utilize esta convenção:
+
+Plaintext
+/projeto-pdv
+├── /backend
+│   ├── server.js (ou main.py)
+│   ├── routes/
+│   └── models/ (Banco de dados)
+└── /frontend
+    ├── index.html
+    ├── /css
+    │   └── style.css
+    └── /js
+        ├── main.js
+        └── api.js (Comunicação com backend)
+Nota de Segurança: Lembre-se que em um ambiente real, o frontend nunca deve calcular o preço final sozinho para salvar no banco. O frontend exibe para o usuário, mas o backend deve recalcular tudo antes de fechar a venda para evitar manipulações maliciosas no console do navegador.
