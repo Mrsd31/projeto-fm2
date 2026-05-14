@@ -1,561 +1,270 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>PDV Farmácia - Sistema de Vendas e Revenda</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-        }
-
-        body {
-            background: #e9f0f5;
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        /* Layout principal */
-        .dashboard {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
-        }
-
-        /* Catálogo de produtos (para revendedor visualizar) */
-        .catalogo {
-            flex: 2;
-            min-width: 280px;
-            background: white;
-            border-radius: 28px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            overflow: hidden;
-            transition: all 0.2s;
-        }
-
-        .catalogo-header {
-            background: #0b3b5f;
-            color: white;
-            padding: 18px 24px;
-        }
-
-        .catalogo-header h2 {
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .catalogo-header p {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            margin-top: 6px;
-        }
-
-        .produtos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 16px;
-            padding: 24px;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        .produto-card {
-            background: #fefefe;
-            border-radius: 20px;
-            border: 1px solid #dee4e9;
-            padding: 14px;
-            transition: 0.1s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-
-        .produto-card:hover {
-            border-color: #7ab3c8;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
-            transform: translateY(-2px);
-        }
-
-        .prod-nome {
-            font-weight: 700;
-            font-size: 1rem;
-            color: #1a2c3e;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .prod-detalhe {
-            font-size: 0.75rem;
-            color: #5c6f87;
-            margin-bottom: 12px;
-            line-height: 1.3;
-        }
-
-        .prod-preco {
-            font-weight: 800;
-            font-size: 1.25rem;
-            color: #146b3a;
-            margin-bottom: 12px;
-        }
-
-        .btn-add-venda {
-            background: #2c7da0;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 8px 0;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.8rem;
-        }
-
-        .btn-add-venda:hover {
-            background: #1f5e7a;
-            transform: scale(0.97);
-        }
-
-        /* PDV - Carrinho e venda */
-        .pdv {
-            flex: 1.4;
-            min-width: 320px;
-            background: white;
-            border-radius: 28px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .pdv-header {
-            background: #1e4a6b;
-            color: white;
-            padding: 18px 24px;
-        }
-
-        .pdv-header h2 {
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .carrinho {
-            flex: 1;
-            padding: 16px;
-            background: #fafcfd;
-        }
-
-        .lista-itens {
-            list-style: none;
-            max-height: 320px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            border-radius: 20px;
-        }
-
-        .item-carrinho {
-            background: white;
-            border-radius: 18px;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #e2edf2;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-        }
-
-        .item-info {
-            flex: 3;
-        }
-
-        .item-nome {
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .item-preco {
-            font-size: 0.7rem;
-            color: #2e7d64;
-        }
-
-        .item-qtd {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #f0f4f8;
-            padding: 4px 8px;
-            border-radius: 30px;
-        }
-
-        .item-qtd button {
-            background: #cbdbe0;
-            border: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .item-qtd span {
-            min-width: 24px;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .item-subtotal {
-            font-weight: 700;
-            font-size: 0.85rem;
-            margin-left: 12px;
-            min-width: 60px;
-            text-align: right;
-        }
-
-        .btn-remover {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            margin-left: 6px;
-            color: #b91c1c;
-            opacity: 0.6;
-        }
-
-        .resumo {
-            border-top: 2px dashed #cbdde6;
-            padding-top: 16px;
-            margin-top: 8px;
-        }
-
-        .linha-total {
-            display: flex;
-            justify-content: space-between;
-            font-size: 1.2rem;
-            font-weight: 800;
-            margin: 12px 0;
-        }
-
-        .btn-finalizar {
-            background: #146b3a;
-            color: white;
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 40px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 12px;
-        }
-
-        .btn-finalizar:hover {
-            background: #0e4e2c;
-        }
-
-        .btn-limpar {
-            background: #e2e8f0;
-            color: #1e2f3e;
-            width: 100%;
-            padding: 8px;
-            border: none;
-            border-radius: 40px;
-            margin-top: 8px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        /* Status e notificações */
-        .toast-msg {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #1e293b;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            z-index: 999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: 0.2s;
-        }
-
-        .vazio {
-            text-align: center;
-            color: #8096ab;
-            padding: 30px;
-            font-style: italic;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 0.7rem;
-            color: #6c8dae;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaPDV - Sistema de Gestão Farmacêutica</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-
-<div class="dashboard">
-    <!-- CATÁLOGO DE PRODUTOS (VISUALIZAÇÃO PARA REVENDEDOR / CLIENTE) -->
-    <div class="catalogo">
-        <div class="catalogo-header">
-            <h2>📋 Catálogo Farmácia Saúde+</h2>
-            <p>Revendedor pode visualizar todos os medicamentos e produtos disponíveis para revenda. <br> Clique em "Adicionar à Venda" para compor o PDV.</p>
-        </div>
-        <div class="produtos-grid" id="listaProdutosGrid">
-            <!-- Produtos serão inseridos via JS -->
+    <!-- Tela de Login -->
+    <div id="loginScreen" class="screen active">
+        <div class="login-container">
+            <div class="login-header">
+                <i class="fas fa-clinic-medical"></i>
+                <h1>PharmaPDV</h1>
+                <p>Sistema de Gestão Farmacêutica</p>
+            </div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Usuário" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Senha" required>
+                </div>
+                <div class="user-type-selector">
+                    <label>
+                        <input type="radio" name="userType" value="caixa" checked>
+                        <span>Caixa</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="userType" value="revendedor">
+                        <span>Revendedor</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="userType" value="promotor">
+                        <span>Promotor</span>
+                    </label>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </button>
+            </form>
         </div>
     </div>
 
-    <!-- PDV - PAINEL DE VENDAS -->
-    <div class="pdv">
-        <div class="pdv-header">
-            <h2>🧾 PDV - Ponto de Venda</h2>
-            <p style="font-size: 0.75rem; opacity:0.9;">Venda direta para cliente final</p>
-        </div>
-        <div class="carrinho">
-            <div style="font-weight: 600; margin-bottom: 8px;">🛒 Itens no carrinho</div>
-            <ul class="lista-itens" id="carrinhoLista">
-                <li class="vazio">Nenhum produto adicionado</li>
-            </ul>
-            <div class="resumo">
-                <div class="linha-total">
-                    <span>💰 Total da venda</span>
-                    <span id="totalVenda">R$ 0,00</span>
+    <!-- Dashboard Principal -->
+    <div id="dashboardScreen" class="screen">
+        <nav class="main-nav">
+            <div class="nav-brand">
+                <i class="fas fa-clinic-medical"></i>
+                <span>PharmaPDV</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-btn active" data-screen="caixa">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Caixa</span>
+                </button>
+                <button class="nav-btn" data-screen="estoque">
+                    <i class="fas fa-boxes"></i>
+                    <span>Estoque</span>
+                </button>
+                <button class="nav-btn" data-screen="mobile">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Mobile</span>
+                </button>
+                <button class="nav-btn" data-screen="relatorios">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Relatórios</span>
+                </button>
+            </div>
+            <div class="nav-user">
+                <span id="currentUser"></span>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Tela de Caixa -->
+        <div id="caixaScreen" class="content-screen active">
+            <div class="pdv-container">
+                <div class="pdv-left">
+                    <div class="search-product">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="productSearch" placeholder="Buscar produto por nome ou código...">
+                    </div>
+                    <div class="products-grid" id="productsGrid">
+                        <!-- Produtos serão carregados aqui -->
+                    </div>
                 </div>
-                <button class="btn-finalizar" id="btnFinalizarVenda">💵 Finalizar Venda</button>
-                <button class="btn-limpar" id="btnLimparCarrinho">🗑️ Limpar Carrinho</button>
+                <div class="pdv-right">
+                    <div class="cart-header">
+                        <h2><i class="fas fa-shopping-cart"></i> Carrinho</h2>
+                        <span id="cartCount">0 itens</span>
+                    </div>
+                    <div class="cart-items" id="cartItems">
+                        <!-- Itens do carrinho -->
+                    </div>
+                    <div class="cart-totals">
+                        <div class="total-row">
+                            <span>Subtotal:</span>
+                            <span id="subtotal">R$ 0,00</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Desconto:</span>
+                            <span id="desconto">R$ 0,00</span>
+                        </div>
+                        <div class="total-row total-final">
+                            <span>Total:</span>
+                            <span id="total">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="cart-actions">
+                        <button class="btn-finalizar" onclick="finalizarVenda()">
+                            <i class="fas fa-check-circle"></i> Finalizar Venda (F12)
+                        </button>
+                        <button class="btn-cancelar" onclick="cancelarVenda()">
+                            <i class="fas fa-times-circle"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Estoque -->
+        <div id="estoqueScreen" class="content-screen">
+            <div class="estoque-container">
+                <div class="estoque-header">
+                    <h2><i class="fas fa-boxes"></i> Gestão de Estoque</h2>
+                    <button class="btn-add-product" onclick="abrirModalProduto()">
+                        <i class="fas fa-plus"></i> Novo Produto
+                    </button>
+                </div>
+                <div class="estoque-filters">
+                    <input type="text" id="estoqueSearch" placeholder="Buscar no estoque...">
+                    <select id="categoriaFilter">
+                        <option value="">Todas Categorias</option>
+                        <option value="medicamento">Medicamentos</option>
+                        <option value="higiene">Higiene</option>
+                        <option value="cosmetico">Cosméticos</option>
+                        <option value="suplemento">Suplementos</option>
+                    </select>
+                </div>
+                <div class="estoque-table-container">
+                    <table class="estoque-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Produto</th>
+                                <th>Categoria</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="estoqueTableBody">
+                            <!-- Dados do estoque -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela Mobile para Revendedores -->
+        <div id="mobileScreen" class="content-screen">
+            <div class="mobile-container">
+                <div class="mobile-header">
+                    <h2><i class="fas fa-mobile-alt"></i> Portal do Revendedor</h2>
+                    <div class="revendedor-info">
+                        <span id="revendedorNome"></span>
+                        <span id="revendedorCodigo"></span>
+                    </div>
+                </div>
+                <div class="mobile-actions">
+                    <button class="mobile-btn" onclick="novaVendaMobile()">
+                        <i class="fas fa-plus-circle"></i>
+                        Nova Venda
+                    </button>
+                    <button class="mobile-btn" onclick="verCatalogo()">
+                        <i class="fas fa-book"></i>
+                        Catálogo
+                    </button>
+                    <button class="mobile-btn" onclick="minhasVendas()">
+                        <i class="fas fa-history"></i>
+                        Minhas Vendas
+                    </button>
+                </div>
+                <div class="mobile-products" id="mobileProducts">
+                    <!-- Produtos para venda mobile -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Relatórios -->
+        <div id="relatoriosScreen" class="content-screen">
+            <div class="relatorios-container">
+                <h2><i class="fas fa-chart-bar"></i> Relatórios</h2>
+                <div class="relatorios-grid">
+                    <div class="relatorio-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Vendas do Dia</h3>
+                        <p id="vendasDia">R$ 0,00</p>
+                    </div>
+                    <div class="relatorio-card">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>Produtos Mais Vendidos</h3>
+                        <div id="topProducts"></div>
+                    </div>
+                    <div class="relatorio-card">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Estoque Baixo</h3>
+                        <div id="lowStock"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<footer>
-    Sistema PDV Farmácia | Revendedores visualizam preços e produtos | Venda rápida e gestão simplificada
-</footer>
 
-<script>
-    // ------------------------------------------------------------------
-    // BASE DE PRODUTOS DA FARMÁCIA (PARA REVENDA E PDV)
-    // Cada produto possui: id, nome, descricao, preco, categoria, estoque (simulado)
-    // ------------------------------------------------------------------
-    const produtosFarm = [
-        { id: 1, nome: "Paracetamol 750mg", descricao: "Analgésico, antitérmico - caixa 20 comprimidos", preco: 12.90, categoria: "Analgésicos" },
-        { id: 2, nome: "Ibuprofeno 400mg", descricao: "Anti-inflamatório - 24 comprimidos", preco: 19.50, categoria: "Anti-inflamatórios" },
-        { id: 3, nome: "Amoxicilina 500mg", descricao: "Antibiótico - 21 cápsulas (com receita)", preco: 34.90, categoria: "Antibióticos" },
-        { id: 4, nome: "Dipirona Sódica 500mg/mL", descricao: "Solução oral - frasco 20mL", preco: 8.75, categoria: "Analgésicos" },
-        { id: 5, nome: "Losartana 50mg", descricao: "Anti-hipertensivo - 30 comprimidos", preco: 28.60, categoria: "Cardiologia" },
-        { id: 6, nome: "Omeprazol 20mg", descricao: "Protetor gástrico - 28 cápsulas", preco: 22.30, categoria: "Gastrointestinal" },
-        { id: 7, nome: "Vitamina C 1g", descricao: "Efervescente - 10 comprimidos", preco: 14.20, categoria: "Vitaminas" },
-        { id: 8, nome: "Curativo Adesivo", descricao: "Caixa com 10 unidades - tamanhos variados", preco: 6.45, categoria: "Curativos" },
-        { id: 9, nome: "Gaze Estéril", descricao: "Pacote 10x10cm - 5 unidades", preco: 4.90, categoria: "Curativos" },
-        { id: 10, nome: "Álcool em Gel 70%", descricao: "Frasco 500ml - antisséptico", preco: 11.25, categoria: "Higiene" },
-        { id: 11, nome: "Máscara Cirúrgica", descricao: "Pacote 50 unidades - proteção", preco: 23.90, categoria: "Proteção" },
-        { id: 12, nome: "Termômetro Digital", descricao: "Medição rápida, sonda flexível", preco: 39.90, categoria: "Equipamentos" }
-    ];
-
-    // Estado do carrinho de vendas (PDV)
-    let carrinho = []; // cada item: { id, nome, precoUnit, quantidade }
-
-    // Referências DOM
-    const produtosGridEl = document.getElementById("listaProdutosGrid");
-    const carrinhoListaEl = document.getElementById("carrinhoLista");
-    const totalVendaSpan = document.getElementById("totalVenda");
-    const btnFinalizar = document.getElementById("btnFinalizarVenda");
-    const btnLimparCarrinho = document.getElementById("btnLimparCarrinho");
-
-    // Função para exibir notificações rápidas
-    function mostrarToast(mensagem, cor = "#1e293b") {
-        let toast = document.querySelector(".toast-msg");
-        if(toast) toast.remove();
-        const div = document.createElement("div");
-        div.className = "toast-msg";
-        div.style.backgroundColor = cor;
-        div.innerText = mensagem;
-        document.body.appendChild(div);
-        setTimeout(() => div.remove(), 2500);
-    }
-
-    // Renderizar catálogo de produtos (visão revendedor/funcionário)
-    function renderizarCatalogo() {
-        if(!produtosGridEl) return;
-        produtosGridEl.innerHTML = "";
-        produtosFarm.forEach(prod => {
-            const card = document.createElement("div");
-            card.className = "produto-card";
-            card.innerHTML = `
-                <div class="prod-nome">
-                    <span>${prod.nome}</span>
-                    <span style="font-size:0.7rem; background:#eef2f5; padding:2px 6px; border-radius:20px;">${prod.categoria}</span>
+    <!-- Modal de Produto -->
+    <div id="produtoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal()">&times;</span>
+            <h2>Cadastrar/Editar Produto</h2>
+            <form id="produtoForm">
+                <div class="form-group">
+                    <label>Código:</label>
+                    <input type="text" id="codigoProduto" required>
                 </div>
-                <div class="prod-detalhe">${prod.descricao}</div>
-                <div class="prod-preco">R$ ${prod.preco.toFixed(2)}</div>
-                <button class="btn-add-venda" data-id="${prod.id}">➕ Adicionar à Venda</button>
-            `;
-            produtosGridEl.appendChild(card);
-        });
+                <div class="form-group">
+                    <label>Nome:</label>
+                    <input type="text" id="nomeProduto" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoria:</label>
+                    <select id="categoriaProduto">
+                        <option value="medicamento">Medicamento</option>
+                        <option value="higiene">Higiene</option>
+                        <option value="cosmetico">Cosmético</option>
+                        <option value="suplemento">Suplemento</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Preço de Custo:</label>
+                    <input type="number" id="precoCusto" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Preço de Venda:</label>
+                    <input type="number" id="precoVenda" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Quantidade em Estoque:</label>
+                    <input type="number" id="quantidadeEstoque" required>
+                </div>
+                <button type="submit" class="btn-salvar">
+                    <i class="fas fa-save"></i> Salvar
+                </button>
+            </form>
+        </div>
+    </div>
 
-        // Adicionar eventos aos botões de adicionar ao carrinho
-        document.querySelectorAll(".btn-add-venda").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                const prodId = parseInt(btn.getAttribute("data-id"));
-                const produto = produtosFarm.find(p => p.id === prodId);
-                if(produto) {
-                    adicionarAoCarrinho(produto);
-                    mostrarToast(`✅ ${produto.nome} adicionado ao carrinho`, "#146b3a");
-                }
-            });
-        });
-    }
-
-    // Adicionar ou incrementar produto no carrinho
-    function adicionarAoCarrinho(produto) {
-        const existeIndex = carrinho.findIndex(item => item.id === produto.id);
-        if(existeIndex !== -1) {
-            carrinho[existeIndex].quantidade += 1;
-        } else {
-            carrinho.push({
-                id: produto.id,
-                nome: produto.nome,
-                precoUnit: produto.preco,
-                quantidade: 1
-            });
-        }
-        renderizarCarrinho();
-    }
-
-    // Atualizar quantidade (incremento/decremento)
-    function alterarQuantidade(id, delta) {
-        const index = carrinho.findIndex(item => item.id === id);
-        if(index === -1) return;
-        const novaQtd = carrinho[index].quantidade + delta;
-        if(novaQtd <= 0) {
-            // remove item
-            carrinho.splice(index, 1);
-        } else {
-            carrinho[index].quantidade = novaQtd;
-        }
-        renderizarCarrinho();
-    }
-
-    // Remover item completamente
-    function removerItemCompleto(id) {
-        carrinho = carrinho.filter(item => item.id !== id);
-        renderizarCarrinho();
-        mostrarToast("Item removido do carrinho", "#b45353");
-    }
-
-    // Calcular total do carrinho
-    function calcularTotal() {
-        return carrinho.reduce((acc, item) => acc + (item.precoUnit * item.quantidade), 0);
-    }
-
-    // Renderizar lista do carrinho e total
-    function renderizarCarrinho() {
-        if(!carrinhoListaEl) return;
-        if(carrinho.length === 0) {
-            carrinhoListaEl.innerHTML = '<li class="vazio">🛒 Carrinho vazio. Adicione produtos ao lado.</li>';
-            totalVendaSpan.innerText = "R$ 0,00";
-            return;
-        }
-
-        let html = "";
-        carrinho.forEach(item => {
-            const subtotal = item.precoUnit * item.quantidade;
-            html += `
-                <li class="item-carrinho">
-                    <div class="item-info">
-                        <div class="item-nome">${item.nome}</div>
-                        <div class="item-preco">R$ ${item.precoUnit.toFixed(2)} un.</div>
-                    </div>
-                    <div class="item-qtd">
-                        <button class="qtd-menos" data-id="${item.id}">-</button>
-                        <span>${item.quantidade}</span>
-                        <button class="qtd-mais" data-id="${item.id}">+</button>
-                    </div>
-                    <div class="item-subtotal">R$ ${subtotal.toFixed(2)}</div>
-                    <button class="btn-remover" data-id="${item.id}" title="Remover item">✖</button>
-                </li>
-            `;
-        });
-        carrinhoListaEl.innerHTML = html;
-
-        // eventos para controles de quantidade e remoção
-        document.querySelectorAll(".qtd-mais").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                const id = parseInt(btn.getAttribute("data-id"));
-                alterarQuantidade(id, 1);
-            });
-        });
-        document.querySelectorAll(".qtd-menos").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                const id = parseInt(btn.getAttribute("data-id"));
-                alterarQuantidade(id, -1);
-            });
-        });
-        document.querySelectorAll(".btn-remover").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                const id = parseInt(btn.getAttribute("data-id"));
-                removerItemCompleto(id);
-            });
-        });
-
-        const total = calcularTotal();
-        totalVendaSpan.innerText = `R$ ${total.toFixed(2)}`;
-    }
-
-    // Finalizar venda (simular impressão / registro)
-    function finalizarVenda() {
-        if(carrinho.length === 0) {
-            mostrarToast("⚠️ Nenhum produto no carrinho para finalizar venda.", "#b45353");
-            return;
-        }
-        const total = calcularTotal();
-        // Simular nota fiscal / registro de venda
-        const itensDesc = carrinho.map(i => `${i.nome} (${i.quantidade}x R$ ${i.precoUnit.toFixed(2)})`).join(", ");
-        mostrarToast(`💸 Venda finalizada! Total: R$ ${total.toFixed(2)}. Itens: ${itensDesc.substring(0, 80)}${itensDesc.length > 80 ? '...' : ''}`, "#146b3a");
-        
-        // Mostrar modal de confirmação adicional com alert simplificado (mas não invasivo)
-        alert(`🩺 Venda concluída com sucesso!\nTotal: R$ ${total.toFixed(2)}\nItens vendidos: ${carrinho.length} tipos.\n\nObrigado pela preferência!`);
-        
-        // Limpar carrinho após finalizar
-        carrinho = [];
-        renderizarCarrinho();
-        // Opcional: efeito visual nos cards
-    }
-
-    function limparCarrinho() {
-        if(carrinho.length > 0) {
-            if(confirm("Tem certeza que deseja limpar todo o carrinho?")) {
-                carrinho = [];
-                renderizarCarrinho();
-                mostrarToast("Carrinho esvaziado", "#4a627a");
-            }
-        } else {
-            mostrarToast("Carrinho já está vazio", "#4a627a");
-        }
-    }
-
-    // Inicializar tudo e também garantir que revendedor veja os produtos
-    function init() {
-        renderizarCatalogo();
-        renderizarCarrinho();
-        btnFinalizar.addEventListener("click", finalizarVenda);
-        btnLimparCarrinho.addEventListener("click", limparCarrinho);
-    }
-
-    init();
-</script>
+    <script src="js/auth.js"></script>
+    <script src="js/pdv.js"></script>
+    <script src="js/estoque.js"></script>
+    <script src="js/mobile.js"></script>
 </body>
 </html>
