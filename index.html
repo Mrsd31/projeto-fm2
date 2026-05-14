@@ -2,718 +2,560 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>PharmaPOS - PDV Profissional 3D</title>
-    <!-- Google Fonts e Font Awesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Biblioteca Three.js para efeito 3D -->
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
-            }
-        }
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>PDV Farmácia - Sistema de Vendas e Revenda</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #0a1f1a;
-            overflow: hidden;
-            color: #e0f2e9;
-        }
-
-        /* Canvas 3D de fundo */
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none; /* Permite clicar nos elementos da UI */
-        }
-
-        /* Interface principal do PDV */
-        .pos-container {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            height: 100vh;
-            width: 100%;
-            backdrop-filter: blur(3px);
-            background: rgba(10, 30, 25, 0.45);
-            overflow-y: auto;
+            background: #e9f0f5;
             padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Layout principal */
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
             gap: 24px;
         }
 
-        /* Painel de produtos (esquerda/principal) */
-        .products-panel {
-            flex: 3;
-            min-width: 280px;
-            background: rgba(18, 35, 30, 0.75);
-            backdrop-filter: blur(12px);
-            border-radius: 32px;
-            border: 1px solid rgba(72, 187, 120, 0.4);
-            box-shadow: 0 25px 40px -15px rgba(0,0,0,0.4), 0 0 0 1px rgba(72, 187, 120, 0.2) inset;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.2s;
-        }
-
-        /* Cabeçalho da farmácia */
-        .pharma-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid rgba(72, 187, 120, 0.5);
-        }
-        .pharma-header h1 {
-            font-size: 1.7rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #c0f2d8, #48bb78);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            letter-spacing: -0.5px;
-        }
-        .pharma-header span {
-            font-size: 0.85rem;
-            background: #2d6a4f60;
-            padding: 6px 12px;
-            border-radius: 60px;
-            font-weight: 500;
-        }
-
-        /* Barra de busca */
-        .search-bar {
-            background: rgba(0,0,0,0.45);
-            border-radius: 60px;
-            display: flex;
-            align-items: center;
-            padding: 8px 18px;
-            margin-bottom: 25px;
-            border: 1px solid #48bb7840;
-            transition: all 0.2s;
-        }
-        .search-bar i {
-            color: #48bb78;
-            font-size: 1.2rem;
-            margin-right: 12px;
-        }
-        .search-bar input {
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
-            font-size: 1rem;
-            width: 100%;
-            font-weight: 500;
-        }
-        .search-bar input::placeholder {
-            color: #a0c0b0;
-        }
-
-        /* Grid de produtos com efeito 3D sutil */
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-            gap: 18px;
-            overflow-y: auto;
-            max-height: calc(100vh - 210px);
-            padding: 4px 2px;
-        }
-        .product-card {
-            background: rgba(30, 50, 45, 0.8);
-            backdrop-filter: blur(4px);
-            border-radius: 28px;
-            padding: 16px 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.2s;
-            border: 1px solid rgba(72, 187, 120, 0.3);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            transform-style: preserve-3d;
-        }
-        .product-card:hover {
-            transform: translateY(-6px) scale(1.02);
-            border-color: #48bb78;
-            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.5), 0 0 12px rgba(72,187,120,0.4);
-            background: rgba(40, 70, 60, 0.85);
-        }
-        .product-icon {
-            font-size: 2.4rem;
-            background: #1f3d35;
-            width: 60px;
-            height: 60px;
-            line-height: 60px;
-            border-radius: 50%;
-            margin: 0 auto 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #48bb78;
-            box-shadow: inset 0 -2px 0 #2c6e4e, 0 6px 12px rgba(0,0,0,0.2);
-        }
-        .product-card h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin: 8px 0 4px;
-        }
-        .product-price {
-            font-weight: 700;
-            color: #b2f0c7;
-            font-size: 1.2rem;
-            margin-top: 5px;
-        }
-        .product-stock {
-            font-size: 0.7rem;
-            opacity: 0.7;
-        }
-
-        /* Painel do carrinho (direita) */
-        .cart-panel {
-            flex: 1.2;
-            min-width: 300px;
-            background: rgba(12, 28, 23, 0.85);
-            backdrop-filter: blur(12px);
-            border-radius: 32px;
-            border: 1px solid rgba(72, 187, 120, 0.5);
-            box-shadow: 0 25px 35px -12px black;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-        .cart-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 2px solid #48bb78;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-        }
-        .cart-items {
-            flex: 1;
-            overflow-y: auto;
-            max-height: 55vh;
-            margin-bottom: 20px;
-            padding-right: 5px;
-        }
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0,0,0,0.35);
-            margin-bottom: 12px;
-            padding: 12px 16px;
-            border-radius: 24px;
-            backdrop-filter: blur(4px);
-            border-left: 4px solid #48bb78;
-            transition: 0.1s;
-        }
-        .cart-item-info {
+        /* Catálogo de produtos (para revendedor visualizar) */
+        .catalogo {
             flex: 2;
+            min-width: 280px;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: all 0.2s;
         }
-        .cart-item-name {
-            font-weight: 600;
-            font-size: 0.9rem;
+
+        .catalogo-header {
+            background: #0b3b5f;
+            color: white;
+            padding: 18px 24px;
         }
-        .cart-item-price {
-            font-size: 0.8rem;
-            color: #b0dfc0;
-        }
-        .cart-item-qty {
+
+        .catalogo-header h2 {
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
             gap: 10px;
-            background: #1c3a30;
-            padding: 4px 12px;
-            border-radius: 40px;
-        }
-        .cart-item-qty button {
-            background: none;
-            border: none;
-            color: #48bb78;
-            font-weight: bold;
-            font-size: 1.2rem;
-            cursor: pointer;
-            width: 28px;
-            border-radius: 50%;
-            transition: 0.1s;
-        }
-        .cart-item-qty button:hover {
-            background: #2d6a4f;
-            color: white;
-        }
-        .cart-item-qty span {
-            font-weight: 700;
-            min-width: 24px;
-            text-align: center;
-        }
-        .cart-item-remove {
-            background: none;
-            border: none;
-            color: #e68a7c;
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-left: 12px;
-            transition: 0.1s;
-        }
-        .cart-item-remove:hover {
-            color: #ff8a6c;
-            transform: scale(1.1);
-        }
-        .cart-total {
-            background: #10261f;
-            padding: 20px;
-            border-radius: 28px;
-            margin-top: 12px;
-            border-top: 1px solid #48bb78;
-        }
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 700;
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            color: #dcfce8;
-        }
-        .checkout-btn {
-            background: linear-gradient(95deg, #2b7a4b, #48bb78);
-            border: none;
-            width: 100%;
-            padding: 16px;
-            border-radius: 60px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #0f2c20;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 5px 12px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-        .checkout-btn:hover {
-            transform: scale(0.98);
-            background: linear-gradient(95deg, #3c9b64, #5fd18f);
-            box-shadow: 0 8px 18px rgba(0,0,0,0.4);
-        }
-        .empty-cart {
-            text-align: center;
-            opacity: 0.7;
-            padding: 40px 0;
         }
 
-        /* Notificação flutuante */
+        .catalogo-header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 6px;
+        }
+
+        .produtos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+            padding: 24px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .produto-card {
+            background: #fefefe;
+            border-radius: 20px;
+            border: 1px solid #dee4e9;
+            padding: 14px;
+            transition: 0.1s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .produto-card:hover {
+            border-color: #7ab3c8;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+        }
+
+        .prod-nome {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1a2c3e;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .prod-detalhe {
+            font-size: 0.75rem;
+            color: #5c6f87;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .prod-preco {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #146b3a;
+            margin-bottom: 12px;
+        }
+
+        .btn-add-venda {
+            background: #2c7da0;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 8px 0;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.8rem;
+        }
+
+        .btn-add-venda:hover {
+            background: #1f5e7a;
+            transform: scale(0.97);
+        }
+
+        /* PDV - Carrinho e venda */
+        .pdv {
+            flex: 1.4;
+            min-width: 320px;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .pdv-header {
+            background: #1e4a6b;
+            color: white;
+            padding: 18px 24px;
+        }
+
+        .pdv-header h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .carrinho {
+            flex: 1;
+            padding: 16px;
+            background: #fafcfd;
+        }
+
+        .lista-itens {
+            list-style: none;
+            max-height: 320px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border-radius: 20px;
+        }
+
+        .item-carrinho {
+            background: white;
+            border-radius: 18px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e2edf2;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .item-info {
+            flex: 3;
+        }
+
+        .item-nome {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .item-preco {
+            font-size: 0.7rem;
+            color: #2e7d64;
+        }
+
+        .item-qtd {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0f4f8;
+            padding: 4px 8px;
+            border-radius: 30px;
+        }
+
+        .item-qtd button {
+            background: #cbdbe0;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .item-qtd span {
+            min-width: 24px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .item-subtotal {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-left: 12px;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .btn-remover {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: 6px;
+            color: #b91c1c;
+            opacity: 0.6;
+        }
+
+        .resumo {
+            border-top: 2px dashed #cbdde6;
+            padding-top: 16px;
+            margin-top: 8px;
+        }
+
+        .linha-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin: 12px 0;
+        }
+
+        .btn-finalizar {
+            background: #146b3a;
+            color: white;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 12px;
+        }
+
+        .btn-finalizar:hover {
+            background: #0e4e2c;
+        }
+
+        .btn-limpar {
+            background: #e2e8f0;
+            color: #1e2f3e;
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 40px;
+            margin-top: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* Status e notificações */
         .toast-msg {
             position: fixed;
             bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e3a2f;
-            backdrop-filter: blur(16px);
-            padding: 12px 28px;
-            border-radius: 60px;
-            font-weight: 500;
-            z-index: 200;
-            border-left: 5px solid #48bb78;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            transition: opacity 0.3s;
-            pointer-events: none;
-            font-size: 0.9rem;
+            right: 30px;
+            background: #1e293b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: 0.2s;
         }
 
-        /* scroll personalizado */
-        ::-webkit-scrollbar {
-            width: 6px;
+        .vazio {
+            text-align: center;
+            color: #8096ab;
+            padding: 30px;
+            font-style: italic;
         }
-        ::-webkit-scrollbar-track {
-            background: #1a342c;
-            border-radius: 8px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #48bb78;
-            border-radius: 8px;
-        }
-        @media (max-width: 780px) {
-            .pos-container {
-                flex-direction: column;
-                padding: 12px;
-            }
-            .products-grid {
-                max-height: 40vh;
-            }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.7rem;
+            color: #6c8dae;
         }
     </style>
 </head>
 <body>
-    <div id="canvas-container"></div>
 
-    <div class="pos-container">
-        <!-- Painel de Produtos -->
-        <div class="products-panel">
-            <div class="pharma-header">
-                <h1><i class="fas fa-prescription-bottle-alt"></i> PharmaPOS 3D</h1>
-                <span><i class="fas fa-shield-alt"></i> Farmácia Profissional</span>
-            </div>
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Pesquisar medicamentos, produtos...">
-            </div>
-            <div class="products-grid" id="productsGrid">
-                <!-- Produtos serão injetados via JS -->
-            </div>
+<div class="dashboard">
+    <!-- CATÁLOGO DE PRODUTOS (VISUALIZAÇÃO PARA REVENDEDOR / CLIENTE) -->
+    <div class="catalogo">
+        <div class="catalogo-header">
+            <h2>📋 Catálogo Farmácia Saúde+</h2>
+            <p>Revendedor pode visualizar todos os medicamentos e produtos disponíveis para revenda. <br> Clique em "Adicionar à Venda" para compor o PDV.</p>
         </div>
-
-        <!-- Painel do Carrinho -->
-        <div class="cart-panel">
-            <div class="cart-title">
-                <i class="fas fa-shopping-cart"></i> Carrinho de Compras
-                <span style="font-size:0.8rem; background:#2d6a4f; padding:2px 10px; border-radius:50px;" id="cartCount">0</span>
-            </div>
-            <div class="cart-items" id="cartItemsContainer">
-                <div class="empty-cart">🛒 Seu carrinho está vazio</div>
-            </div>
-            <div class="cart-total">
-                <div class="total-row">
-                    <span>Total:</span>
-                    <span id="cartTotalValue">R$ 0,00</span>
-                </div>
-                <button class="checkout-btn" id="checkoutBtn"><i class="fas fa-credit-card"></i> Finalizar Venda</button>
-            </div>
+        <div class="produtos-grid" id="listaProdutosGrid">
+            <!-- Produtos serão inseridos via JS -->
         </div>
     </div>
 
-    <div id="toast" class="toast-msg" style="opacity:0; visibility:hidden;"></div>
-
-    <script type="module">
-        import * as THREE from 'three';
-
-        // ---------- Configuração do Fundo 3D Profissional (Farmacia Elegante) ----------
-        const container = document.getElementById('canvas-container');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x071a14);
-        scene.fog = new THREE.FogExp2(0x071a14, 0.008);
-
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(5, 3, 8);
-        camera.lookAt(0, 0, 0);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.shadowMap.enabled = true; // sombras realistas
-        container.appendChild(renderer.domElement);
-
-        // Luzes profissionais
-        // Ambiente suave
-        const ambientLight = new THREE.AmbientLight(0x223d33);
-        scene.add(ambientLight);
-        // Luz principal direcional
-        const dirLight = new THREE.DirectionalLight(0xd9f0e6, 1.2);
-        dirLight.position.set(4, 8, 3);
-        dirLight.castShadow = true;
-        dirLight.receiveShadow = true;
-        dirLight.shadow.mapSize.width = 1024;
-        dirLight.shadow.mapSize.height = 1024;
-        scene.add(dirLight);
-        // Luz de preenchimento traseira
-        const backLight = new THREE.PointLight(0x48bb78, 0.5);
-        backLight.position.set(-2, 1, -4);
-        scene.add(backLight);
-        // Luz de realce colorida (verde)
-        const fillLight = new THREE.PointLight(0x2b7a4b, 0.6);
-        fillLight.position.set(2, 2, 3);
-        scene.add(fillLight);
-        
-        // Elementos 3D: piso sutil
-        const gridHelper = new THREE.GridHelper(15, 20, 0x48bb78, 0x2c5a4a);
-        gridHelper.position.y = -1.2;
-        gridHelper.material.transparent = true;
-        gridHelper.material.opacity = 0.35;
-        scene.add(gridHelper);
-        
-        // Anel giratório / partículas elegantes
-        const ringGeo = new THREE.TorusGeometry(1.8, 0.05, 64, 300);
-        const ringMat = new THREE.MeshStandardMaterial({ color: 0x48bb78, emissive: 0x1a5a3a, emissiveIntensity: 0.4 });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.rotation.x = Math.PI / 2;
-        ring.position.y = -0.6;
-        scene.add(ring);
-        
-        const ring2Geo = new THREE.TorusGeometry(2.5, 0.04, 64, 300);
-        const ring2Mat = new THREE.MeshStandardMaterial({ color: 0x70cf9a, emissive: 0x216e48 });
-        const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
-        ring2.rotation.x = Math.PI / 2 + 0.2;
-        ring2.position.y = -0.4;
-        scene.add(ring2);
-        
-        // Cubos flutuantes (cápsulas decorativas)
-        const capsuleGroup = [];
-        const colors = [0x48bb78, 0x6bcb96, 0x3f9b6e];
-        for (let i = 0; i < 18; i++) {
-            const size = 0.12 + Math.random() * 0.1;
-            const geometry = new THREE.BoxGeometry(size, size * 1.8, size);
-            const material = new THREE.MeshStandardMaterial({ color: colors[Math.floor(Math.random() * colors.length)], emissive: 0x174d34, emissiveIntensity: 0.2 });
-            const cube = new THREE.Mesh(geometry, material);
-            cube.position.x = (Math.random() - 0.5) * 6;
-            cube.position.z = (Math.random() - 0.5) * 5;
-            cube.position.y = -0.8 + Math.random() * 2.5;
-            cube.castShadow = true;
-            scene.add(cube);
-            capsuleGroup.push(cube);
-        }
-        
-        // Adicionar um globo de vidro ou partículas flutuantes
-        const particleCount = 600;
-        const particlesGeometry = new THREE.BufferGeometry();
-        const particlePositions = new Float32Array(particleCount * 3);
-        for (let i = 0; i < particleCount; i++) {
-            particlePositions[i*3] = (Math.random() - 0.5) * 14;
-            particlePositions[i*3+1] = (Math.random() - 0.5) * 5;
-            particlePositions[i*3+2] = (Math.random() - 0.5) * 12 - 3;
-        }
-        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-        const particleMaterial = new THREE.PointsMaterial({ color: 0x68c994, size: 0.04, transparent: true, opacity: 0.5 });
-        const particles = new THREE.Points(particlesGeometry, particleMaterial);
-        scene.add(particles);
-        
-        // animação 3D
-        let time = 0;
-        function animate3D() {
-            requestAnimationFrame(animate3D);
-            time += 0.008;
-            ring.rotation.z = time * 0.3;
-            ring2.rotation.z = -time * 0.2;
-            ring.rotation.y = time * 0.2;
-            ring2.rotation.y = time * 0.15;
-            particles.rotation.y = time * 0.05;
-            particles.rotation.x = Math.sin(time * 0.1) * 0.1;
-            capsuleGroup.forEach((c, idx) => {
-                c.rotation.x += 0.01;
-                c.rotation.y += 0.02;
-                c.position.y += Math.sin(time + idx) * 0.002;
-            });
-            camera.lookAt(0, 0.5, 0);
-            camera.position.x += (Math.sin(time * 0.1) * 0.1 - (camera.position.x - 5)) * 0.02;
-            camera.position.y += (Math.sin(time * 0.2) * 0.05 + 2.8 - camera.position.y) * 0.02;
-            renderer.render(scene, camera);
-        }
-        animate3D();
-        
-        window.addEventListener('resize', onWindowResize, false);
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        // ---------- LÓGICA DO PDV (CARRINHO E PRODUTOS) ----------
-        // Lista de produtos da farmácia (moderna)
-        const produtos = [
-            { id: 1, nome: "Paracetamol 750mg", preco: 12.90, estoque: 45, icone: "fas fa-tablets", categoria: "analgesico" },
-            { id: 2, nome: "Ibuprofeno 600mg", preco: 19.90, estoque: 32, icone: "fas fa-capsules", categoria: "anti-inflamatorio" },
-            { id: 3, nome: "Dipirona Sódica", preco: 8.50, estoque: 60, icone: "fas fa-syringe", categoria: "analgesico" },
-            { id: 4, nome: "Amoxicilina 500mg", preco: 34.90, estoque: 25, icone: "fas fa-pills", categoria: "antibiotico" },
-            { id: 5, nome: "Vitamina C 1g", preco: 24.50, estoque: 40, icone: "fas fa-apple-alt", categoria: "vitaminas" },
-            { id: 6, nome: "Losartana 50mg", preco: 28.90, estoque: 18, icone: "fas fa-heartbeat", categoria: "cardiovascular" },
-            { id: 7, nome: "Omeprazol 20mg", preco: 22.30, estoque: 27, icone: "fas fa-stethoscope", categoria: "gastro" },
-            { id: 8, nome: "Curativo Adesivo", preco: 6.90, estoque: 120, icone: "fas fa-band-aid", categoria: "curativos" },
-            { id: 9, nome: "Álcool em Gel 70%", preco: 14.90, estoque: 55, icone: "fas fa-hand-holding-heart", categoria: "higiene" },
-            { id: 10, nome: "Máscara Descartável", preco: 9.90, estoque: 200, icone: "fas fa-head-side-mask", categoria: "protecao" }
-        ];
-
-        let cart = []; // { id, nome, preco, quantidade }
-        let searchTerm = "";
-
-        // DOM Elements
-        const productsGrid = document.getElementById("productsGrid");
-        const searchInput = document.getElementById("searchInput");
-        const cartItemsContainer = document.getElementById("cartItemsContainer");
-        const cartTotalValueSpan = document.getElementById("cartTotalValue");
-        const cartCountSpan = document.getElementById("cartCount");
-        const checkoutBtn = document.getElementById("checkoutBtn");
-
-        function showToast(message, isError = false) {
-            const toast = document.getElementById("toast");
-            toast.style.backgroundColor = isError ? "#5c2e2a" : "#1e3a2f";
-            toast.style.borderLeftColor = isError ? "#e6856e" : "#48bb78";
-            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
-            toast.style.opacity = "1";
-            toast.style.visibility = "visible";
-            setTimeout(() => {
-                toast.style.opacity = "0";
-                setTimeout(() => toast.style.visibility = "hidden", 300);
-            }, 2200);
-        }
-
-        function renderProducts() {
-            let filtered = produtos.filter(p => p.nome.toLowerCase().includes(searchTerm.toLowerCase()) || p.categoria.includes(searchTerm.toLowerCase()));
-            if (filtered.length === 0) {
-                productsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px;">🔍 Nenhum produto encontrado</div>`;
-                return;
-            }
-            productsGrid.innerHTML = filtered.map(prod => `
-                <div class="product-card" data-id="${prod.id}">
-                    <div class="product-icon"><i class="${prod.icone}"></i></div>
-                    <h4>${prod.nome}</h4>
-                    <div class="product-price">R$ ${prod.preco.toFixed(2)}</div>
-                    <div class="product-stock"><i class="fas fa-boxes"></i> ${prod.estoque} und.</div>
+    <!-- PDV - PAINEL DE VENDAS -->
+    <div class="pdv">
+        <div class="pdv-header">
+            <h2>🧾 PDV - Ponto de Venda</h2>
+            <p style="font-size: 0.75rem; opacity:0.9;">Venda direta para cliente final</p>
+        </div>
+        <div class="carrinho">
+            <div style="font-weight: 600; margin-bottom: 8px;">🛒 Itens no carrinho</div>
+            <ul class="lista-itens" id="carrinhoLista">
+                <li class="vazio">Nenhum produto adicionado</li>
+            </ul>
+            <div class="resumo">
+                <div class="linha-total">
+                    <span>💰 Total da venda</span>
+                    <span id="totalVenda">R$ 0,00</span>
                 </div>
-            `).join('');
-            // adicionar eventos aos cards
-            document.querySelectorAll('.product-card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    const id = parseInt(card.dataset.id);
-                    addToCart(id);
-                });
-            });
-        }
+                <button class="btn-finalizar" id="btnFinalizarVenda">💵 Finalizar Venda</button>
+                <button class="btn-limpar" id="btnLimparCarrinho">🗑️ Limpar Carrinho</button>
+            </div>
+        </div>
+    </div>
+</div>
+<footer>
+    Sistema PDV Farmácia | Revendedores visualizam preços e produtos | Venda rápida e gestão simplificada
+</footer>
 
-        function addToCart(productId) {
-            const produto = produtos.find(p => p.id === productId);
-            if (!produto) return;
-            const existingItem = cart.find(item => item.id === productId);
-            const currentQtyInCart = existingItem ? existingItem.quantidade : 0;
-            if (currentQtyInCart + 1 > produto.estoque) {
-                showToast(`Estoque insuficiente! Disponível: ${produto.estoque}`, true);
-                return;
-            }
-            if (existingItem) {
-                existingItem.quantidade++;
-            } else {
-                cart.push({ id: produto.id, nome: produto.nome, preco: produto.preco, quantidade: 1 });
-            }
-            updateCartUI();
-            showToast(`${produto.nome} adicionado ao carrinho.`);
-        }
+<script>
+    // ------------------------------------------------------------------
+    // BASE DE PRODUTOS DA FARMÁCIA (PARA REVENDA E PDV)
+    // Cada produto possui: id, nome, descricao, preco, categoria, estoque (simulado)
+    // ------------------------------------------------------------------
+    const produtosFarm = [
+        { id: 1, nome: "Paracetamol 750mg", descricao: "Analgésico, antitérmico - caixa 20 comprimidos", preco: 12.90, categoria: "Analgésicos" },
+        { id: 2, nome: "Ibuprofeno 400mg", descricao: "Anti-inflamatório - 24 comprimidos", preco: 19.50, categoria: "Anti-inflamatórios" },
+        { id: 3, nome: "Amoxicilina 500mg", descricao: "Antibiótico - 21 cápsulas (com receita)", preco: 34.90, categoria: "Antibióticos" },
+        { id: 4, nome: "Dipirona Sódica 500mg/mL", descricao: "Solução oral - frasco 20mL", preco: 8.75, categoria: "Analgésicos" },
+        { id: 5, nome: "Losartana 50mg", descricao: "Anti-hipertensivo - 30 comprimidos", preco: 28.60, categoria: "Cardiologia" },
+        { id: 6, nome: "Omeprazol 20mg", descricao: "Protetor gástrico - 28 cápsulas", preco: 22.30, categoria: "Gastrointestinal" },
+        { id: 7, nome: "Vitamina C 1g", descricao: "Efervescente - 10 comprimidos", preco: 14.20, categoria: "Vitaminas" },
+        { id: 8, nome: "Curativo Adesivo", descricao: "Caixa com 10 unidades - tamanhos variados", preco: 6.45, categoria: "Curativos" },
+        { id: 9, nome: "Gaze Estéril", descricao: "Pacote 10x10cm - 5 unidades", preco: 4.90, categoria: "Curativos" },
+        { id: 10, nome: "Álcool em Gel 70%", descricao: "Frasco 500ml - antisséptico", preco: 11.25, categoria: "Higiene" },
+        { id: 11, nome: "Máscara Cirúrgica", descricao: "Pacote 50 unidades - proteção", preco: 23.90, categoria: "Proteção" },
+        { id: 12, nome: "Termômetro Digital", descricao: "Medição rápida, sonda flexível", preco: 39.90, categoria: "Equipamentos" }
+    ];
 
-        function updateCartUI() {
-            // Atualizar contador e total
-            const totalItens = cart.reduce((acc, item) => acc + item.quantidade, 0);
-            cartCountSpan.innerText = totalItens;
-            const totalValue = cart.reduce((acc, item) => acc + (item.preco * item.quantidade), 0);
-            cartTotalValueSpan.innerText = `R$ ${totalValue.toFixed(2)}`;
-            
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = `<div class="empty-cart">🛒 Seu carrinho está vazio</div>`;
-                return;
-            }
-            cartItemsContainer.innerHTML = cart.map(item => `
-                <div class="cart-item" data-id="${item.id}">
-                    <div class="cart-item-info">
-                        <div class="cart-item-name">${item.nome}</div>
-                        <div class="cart-item-price">R$ ${item.preco.toFixed(2)}</div>
-                    </div>
-                    <div class="cart-item-qty">
-                        <button class="qty-minus" data-id="${item.id}">-</button>
-                        <span>${item.quantidade}</span>
-                        <button class="qty-plus" data-id="${item.id}">+</button>
-                    </div>
-                    <button class="cart-item-remove" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button>
+    // Estado do carrinho de vendas (PDV)
+    let carrinho = []; // cada item: { id, nome, precoUnit, quantidade }
+
+    // Referências DOM
+    const produtosGridEl = document.getElementById("listaProdutosGrid");
+    const carrinhoListaEl = document.getElementById("carrinhoLista");
+    const totalVendaSpan = document.getElementById("totalVenda");
+    const btnFinalizar = document.getElementById("btnFinalizarVenda");
+    const btnLimparCarrinho = document.getElementById("btnLimparCarrinho");
+
+    // Função para exibir notificações rápidas
+    function mostrarToast(mensagem, cor = "#1e293b") {
+        let toast = document.querySelector(".toast-msg");
+        if(toast) toast.remove();
+        const div = document.createElement("div");
+        div.className = "toast-msg";
+        div.style.backgroundColor = cor;
+        div.innerText = mensagem;
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 2500);
+    }
+
+    // Renderizar catálogo de produtos (visão revendedor/funcionário)
+    function renderizarCatalogo() {
+        if(!produtosGridEl) return;
+        produtosGridEl.innerHTML = "";
+        produtosFarm.forEach(prod => {
+            const card = document.createElement("div");
+            card.className = "produto-card";
+            card.innerHTML = `
+                <div class="prod-nome">
+                    <span>${prod.nome}</span>
+                    <span style="font-size:0.7rem; background:#eef2f5; padding:2px 6px; border-radius:20px;">${prod.categoria}</span>
                 </div>
-            `).join('');
-            // adicionar eventos dinâmicos
-            document.querySelectorAll('.qty-minus').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(btn.dataset.id);
-                    changeQuantity(id, -1);
-                });
-            });
-            document.querySelectorAll('.qty-plus').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(btn.dataset.id);
-                    changeQuantity(id, 1);
-                });
-            });
-            document.querySelectorAll('.cart-item-remove').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(btn.dataset.id);
-                    removeItemComplete(id);
-                });
-            });
-        }
-
-        function changeQuantity(productId, delta) {
-            const itemIndex = cart.findIndex(i => i.id === productId);
-            if (itemIndex === -1) return;
-            const item = cart[itemIndex];
-            const produtoOriginal = produtos.find(p => p.id === productId);
-            const newQty = item.quantidade + delta;
-            if (newQty < 1) {
-                removeItemComplete(productId);
-                return;
-            }
-            if (newQty > produtoOriginal.estoque) {
-                showToast(`Estoque máximo atingido para ${produtoOriginal.nome} (${produtoOriginal.estoque} disponíveis)`, true);
-                return;
-            }
-            item.quantidade = newQty;
-            updateCartUI();
-        }
-
-        function removeItemComplete(productId) {
-            cart = cart.filter(item => item.id !== productId);
-            updateCartUI();
-            showToast("Item removido do carrinho");
-        }
-
-        function finalizarVenda() {
-            if (cart.length === 0) {
-                showToast("Carrinho vazio. Adicione produtos antes de finalizar.", true);
-                return;
-            }
-            // Verificar novamente estoque para cada item (evitar inconsistência)
-            let canFinish = true;
-            for (let item of cart) {
-                const original = produtos.find(p => p.id === item.id);
-                if (original.estoque < item.quantidade) {
-                    showToast(`Estoque insuficiente para ${original.nome}. Disponível: ${original.estoque}`, true);
-                    canFinish = false;
-                    break;
-                }
-            }
-            if (!canFinish) return;
-            // Atualizar estoque
-            for (let item of cart) {
-                const original = produtos.find(p => p.id === item.id);
-                original.estoque -= item.quantidade;
-            }
-            const total = cart.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
-            showToast(`✅ Venda finalizada! Total: R$ ${total.toFixed(2)}. Obrigado!`);
-            // Limpar carrinho
-            cart = [];
-            updateCartUI();
-            renderProducts(); // recarregar grid para mostrar estoques atualizados
-            // Efeito de confete simples visual (apenas console feedback)
-        }
-
-        // Eventos
-        searchInput.addEventListener('input', (e) => {
-            searchTerm = e.target.value;
-            renderProducts();
+                <div class="prod-detalhe">${prod.descricao}</div>
+                <div class="prod-preco">R$ ${prod.preco.toFixed(2)}</div>
+                <button class="btn-add-venda" data-id="${prod.id}">➕ Adicionar à Venda</button>
+            `;
+            produtosGridEl.appendChild(card);
         });
-        checkoutBtn.addEventListener('click', finalizarVenda);
+
+        // Adicionar eventos aos botões de adicionar ao carrinho
+        document.querySelectorAll(".btn-add-venda").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const prodId = parseInt(btn.getAttribute("data-id"));
+                const produto = produtosFarm.find(p => p.id === prodId);
+                if(produto) {
+                    adicionarAoCarrinho(produto);
+                    mostrarToast(`✅ ${produto.nome} adicionado ao carrinho`, "#146b3a");
+                }
+            });
+        });
+    }
+
+    // Adicionar ou incrementar produto no carrinho
+    function adicionarAoCarrinho(produto) {
+        const existeIndex = carrinho.findIndex(item => item.id === produto.id);
+        if(existeIndex !== -1) {
+            carrinho[existeIndex].quantidade += 1;
+        } else {
+            carrinho.push({
+                id: produto.id,
+                nome: produto.nome,
+                precoUnit: produto.preco,
+                quantidade: 1
+            });
+        }
+        renderizarCarrinho();
+    }
+
+    // Atualizar quantidade (incremento/decremento)
+    function alterarQuantidade(id, delta) {
+        const index = carrinho.findIndex(item => item.id === id);
+        if(index === -1) return;
+        const novaQtd = carrinho[index].quantidade + delta;
+        if(novaQtd <= 0) {
+            // remove item
+            carrinho.splice(index, 1);
+        } else {
+            carrinho[index].quantidade = novaQtd;
+        }
+        renderizarCarrinho();
+    }
+
+    // Remover item completamente
+    function removerItemCompleto(id) {
+        carrinho = carrinho.filter(item => item.id !== id);
+        renderizarCarrinho();
+        mostrarToast("Item removido do carrinho", "#b45353");
+    }
+
+    // Calcular total do carrinho
+    function calcularTotal() {
+        return carrinho.reduce((acc, item) => acc + (item.precoUnit * item.quantidade), 0);
+    }
+
+    // Renderizar lista do carrinho e total
+    function renderizarCarrinho() {
+        if(!carrinhoListaEl) return;
+        if(carrinho.length === 0) {
+            carrinhoListaEl.innerHTML = '<li class="vazio">🛒 Carrinho vazio. Adicione produtos ao lado.</li>';
+            totalVendaSpan.innerText = "R$ 0,00";
+            return;
+        }
+
+        let html = "";
+        carrinho.forEach(item => {
+            const subtotal = item.precoUnit * item.quantidade;
+            html += `
+                <li class="item-carrinho">
+                    <div class="item-info">
+                        <div class="item-nome">${item.nome}</div>
+                        <div class="item-preco">R$ ${item.precoUnit.toFixed(2)} un.</div>
+                    </div>
+                    <div class="item-qtd">
+                        <button class="qtd-menos" data-id="${item.id}">-</button>
+                        <span>${item.quantidade}</span>
+                        <button class="qtd-mais" data-id="${item.id}">+</button>
+                    </div>
+                    <div class="item-subtotal">R$ ${subtotal.toFixed(2)}</div>
+                    <button class="btn-remover" data-id="${item.id}" title="Remover item">✖</button>
+                </li>
+            `;
+        });
+        carrinhoListaEl.innerHTML = html;
+
+        // eventos para controles de quantidade e remoção
+        document.querySelectorAll(".qtd-mais").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const id = parseInt(btn.getAttribute("data-id"));
+                alterarQuantidade(id, 1);
+            });
+        });
+        document.querySelectorAll(".qtd-menos").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const id = parseInt(btn.getAttribute("data-id"));
+                alterarQuantidade(id, -1);
+            });
+        });
+        document.querySelectorAll(".btn-remover").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const id = parseInt(btn.getAttribute("data-id"));
+                removerItemCompleto(id);
+            });
+        });
+
+        const total = calcularTotal();
+        totalVendaSpan.innerText = `R$ ${total.toFixed(2)}`;
+    }
+
+    // Finalizar venda (simular impressão / registro)
+    function finalizarVenda() {
+        if(carrinho.length === 0) {
+            mostrarToast("⚠️ Nenhum produto no carrinho para finalizar venda.", "#b45353");
+            return;
+        }
+        const total = calcularTotal();
+        // Simular nota fiscal / registro de venda
+        const itensDesc = carrinho.map(i => `${i.nome} (${i.quantidade}x R$ ${i.precoUnit.toFixed(2)})`).join(", ");
+        mostrarToast(`💸 Venda finalizada! Total: R$ ${total.toFixed(2)}. Itens: ${itensDesc.substring(0, 80)}${itensDesc.length > 80 ? '...' : ''}`, "#146b3a");
         
-        // inicializar
-        renderProducts();
-        updateCartUI();
-    </script>
+        // Mostrar modal de confirmação adicional com alert simplificado (mas não invasivo)
+        alert(`🩺 Venda concluída com sucesso!\nTotal: R$ ${total.toFixed(2)}\nItens vendidos: ${carrinho.length} tipos.\n\nObrigado pela preferência!`);
+        
+        // Limpar carrinho após finalizar
+        carrinho = [];
+        renderizarCarrinho();
+        // Opcional: efeito visual nos cards
+    }
+
+    function limparCarrinho() {
+        if(carrinho.length > 0) {
+            if(confirm("Tem certeza que deseja limpar todo o carrinho?")) {
+                carrinho = [];
+                renderizarCarrinho();
+                mostrarToast("Carrinho esvaziado", "#4a627a");
+            }
+        } else {
+            mostrarToast("Carrinho já está vazio", "#4a627a");
+        }
+    }
+
+    // Inicializar tudo e também garantir que revendedor veja os produtos
+    function init() {
+        renderizarCatalogo();
+        renderizarCarrinho();
+        btnFinalizar.addEventListener("click", finalizarVenda);
+        btnLimparCarrinho.addEventListener("click", limparCarrinho);
+    }
+
+    init();
+</script>
 </body>
 </html>
