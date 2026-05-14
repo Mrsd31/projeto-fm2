@@ -3,7 +3,7 @@ const usuarios = [
     { username: 'caixa', password: '123456', type: 'caixa', nome: 'Operador Caixa' },
     { username: 'revendedor', password: '123456', type: 'revendedor', nome: 'João Revendedor', codigo: 'REV001' },
     { username: 'promotor', password: '123456', type: 'promotor', nome: 'Maria Promotora', codigo: 'PRO001' },
-    { username: 'admin', password: 'admin123', type: 'caixa', nome: 'Administrador' }
+    { username: 'admin', password: 'admin123', type: 'admin', nome: 'Administrador' }
 ];
 
 let currentUser = null;
