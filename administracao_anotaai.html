@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Admin | Santyus-SJ - Painel de Controle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        /* TELA DE LOGIN */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            position: relative;
+        }
+
+        .login-card {
+            background: #111;
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 380px;
+            border: 1px solid #2ecc71;
+            box-shadow: 0 0 30px rgba(46,204,113,0.2);
+        }
+
+        .login-card h1 {
+            font-size: 2rem;
+            text-align: center;
+            color: #2ecc71;
+            margin-bottom: 10px;
+        }
+
+        .login-card .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 15px;
+            background: #1a1a1a;
+            border: 1px solid #2ecc71;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .login-card button {
+            width: 100%;
+            padding: 14px;
+            background: #2ecc71;
+            color: #000;
+            border: none;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .login-card button:hover {
+            background: #27ae60;
+        }
+
+        .error-msg {
+            color: #ff6666;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
+
+        /* PAINEL ADMIN */
+        .dashboard-container {
+            display: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar {
+            background: #000000dd;
+            backdrop-filter: blur(12px);
+            padding: 16px 20px;
+            border-bottom: 1px solid #2ecc71;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #ffffff, #2ecc71);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logout-btn {
+            background: rgba(255,68,68,0.2);
+            color: #ff6666;
+            border: 1px solid #ff6666;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2ecc71;
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2ecc71;
+            color: #2ecc71;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+
+        .btn-danger {
+            background: rgba(255,68,68,0.2);
+            color: #ff6666;
+            border: 1px solid #ff6666;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin: 30px 0 20px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #2ecc7133;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #aaa;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 40px;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: #2ecc71;
+            color: #000;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #111;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #2ecc7133;
+        }
+
+        th {
+            color: #2ecc71;
+        }
+
+        input, select, textarea {
+            background: #1a1a1a;
+            border: 1px solid #2ecc71;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #111;
+            border: 2px solid #2ecc71;
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .config-section {
+            background: #111;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .config-section h3 {
+            color: #2ecc71;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 3px solid #2ecc71;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2ecc71;
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (max-width: 768px) {
+            table { font-size: 0.7rem; }
+            th, td { padding: 6px; }
+            .navbar { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- TELA DE LOGIN -->
+<div id="loginScreen" class="login-container">
+    <div class="login-card">
+        <h1>SANTYUS-SJ</h1>
+        <div class="subtitle">👑 Painel do Administrador</div>
+        <input type="text" id="adminUser" placeholder="Usuário">
+        <input type="password" id="adminPass" placeholder="Senha">
+        <button onclick="loginAdmin()">Entrar</button>
+        <div id="loginError" class="error-msg"></div>
+    </div>
+</div>
+
+<!-- PAINEL ADMIN -->
+<div id="dashboardScreen" class="dashboard-container">
+    <div class="navbar">
+        <h1><i class="fas fa-crown"></i> SANTYUS-SJ | ADMIN</h1>
+        <button class="logout-btn" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i> Sair</button>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="vendedores"><i class="fas fa-store"></i> Vendedores</button>
+            <button class="tab-btn" data-tab="clientes"><i class="fas fa-users"></i> Clientes</button>
+            <button class="tab-btn" data-tab="configNF"><i class="fas fa-file-invoice"></i> Nota Fiscal</button>
+        </div>
+
+        <!-- ABA VENDEDORES -->
+        <div id="tabVendedores" class="tab-content active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3><i class="fas fa-user-plus"></i> Gerenciar Vendedores</h3>
+                <button class="btn-primary" id="btnNovoVendedor"><i class="fas fa-plus"></i> Contratar Vendedor</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Nome</th><th>Login</th><th>Email</th><th>Telefone</th><th>Status</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody id="listaVendedores"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ABA CLIENTES -->
+        <div id="tabClientes" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3><i class="fas fa-user-plus"></i> Gerenciar Clientes</h3>
+                <button class="btn-primary" id="btnNovoCliente"><i class="fas fa-plus"></i> Novo Cliente</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Nome</th><th>Login</th><th>Email</th><th>Telefone</th><th>Status</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody id="listaClientes"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ABA CONFIGURAR NOTA FISCAL -->
+        <div id="tabConfigNF" class="tab-content">
+            <div class="config-section">
+                <h3><i class="fas fa-building"></i> Dados da Empresa</h3>
+                <div class="config-grid">
+                    <div class="config-field"><label>Nome da Empresa</label><input type="text" id="empresaNome" placeholder="Nome"></div>
+                    <div class="config-field"><label>CNPJ</label><input type="text" id="empresaCnpj" placeholder="CNPJ"></div>
+                    <div class="config-field"><label>Inscrição Estadual</label><input type="text" id="empresaIe" placeholder="IE"></div>
+                    <div class="config-field"><label>Telefone</label><input type="text" id="empresaTelefone" placeholder="Telefone"></div>
+                    <div class="config-field"><label>Endereço</label><input type="text" id="empresaEndereco" placeholder="Endereço"></div>
+                    <div class="config-field"><label>Cidade / UF</label><input type="text" id="empresaCidade" placeholder="Cidade - UF"></div>
+                    <div class="config-field"><label>Email</label><input type="email" id="empresaEmail" placeholder="Email"></div>
+                    <div class="config-field"><label>Regime Tributário</label><select id="empresaRegime"><option>Simples Nacional</option><option>Lucro Presumido</option><option>Lucro Real</option><option>MEI</option></select></div>
+                </div>
+            </div>
+            <div class="config-section">
+                <h3><i class="fas fa-percent"></i> Alíquotas de Impostos</h3>
+                <div class="config-grid">
+                    <div class="config-field"><label>ICMS (%)</label><input type="number" id="aliquotaIcms" step="0.01" value="18"></div>
+                    <div class="config-field"><label>PIS (%)</label><input type="number" id="aliquotaPis" step="0.01" value="1.65"></div>
+                    <div class="config-field"><label>COFINS (%)</label><input type="number" id="aliquotaCofins" step="0.01" value="7.6"></div>
+                </div>
+            </div>
+            <div class="config-section">
+                <h3><i class="fas fa-print"></i> Nota Fiscal</h3>
+                <div class="config-grid">
+                    <div class="config-field"><label>Série da NF</label><input type="text" id="nfSerie" value="001"></div>
+                    <div class="config-field"><label>Mensagem Rodapé</label><textarea id="nfRodape" rows="2" placeholder="Mensagem"></textarea></div>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button class="btn-primary" id="salvarConfigBtn"><i class="fas fa-save"></i> Salvar Configurações</button>
+                <button class="btn-outline" id="restaurarPadraoBtn" style="margin-left: 10px;"><i class="fas fa-undo"></i> Restaurar Padrão</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL VENDEDOR -->
+<div id="vendedorModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="fecharModal('vendedorModal')">&times;</span>
+        <h2 id="modalVendedorTitulo">Contratar Vendedor</h2>
+        <input type="hidden" id="editVendedorId">
+        <input type="text" id="vendedorNome" placeholder="Nome completo" style="margin:10px 0">
+        <input type="text" id="vendedorLogin" placeholder="Login" style="margin:10px 0">
+        <input type="password" id="vendedorSenha" placeholder="Senha" style="margin:10px 0">
+        <input type="email" id="vendedorEmail" placeholder="Email" style="margin:10px 0">
+        <input type="text" id="vendedorTelefone" placeholder="Telefone" style="margin:10px 0">
+        <select id="vendedorStatus" style="margin:10px 0">
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+        </select>
+        <button class="btn-primary" id="salvarVendedorBtn" style="width:100%">Salvar</button>
+    </div>
+</div>
+
+<!-- MODAL CLIENTE -->
+<div id="clienteModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="fecharModal('clienteModal')">&times;</span>
+        <h2 id="modalClienteTitulo">Novo Cliente</h2>
+        <input type="hidden" id="editClienteId">
+        <input type="text" id="clienteNome" placeholder="Nome completo" style="margin:10px 0">
+        <input type="text" id="clienteLogin" placeholder="Login" style="margin:10px 0">
+        <input type="password" id="clienteSenha" placeholder="Senha" style="margin:10px 0">
+        <input type="email" id="clienteEmail" placeholder="Email" style="margin:10px 0">
+        <input type="text" id="clienteTelefone" placeholder="Telefone" style="margin:10px 0">
+        <select id="clienteStatus" style="margin:10px 0">
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+        </select>
+        <button class="btn-primary" id="salvarClienteBtn" style="width:100%">Salvar</button>
+    </div>
+</div>
+
+<script>
+    // ==================== CREDENCIAL ADMIN ====================
+    let adminCredencial = { usuario: "admin", senha: "admin123" };
+
+    // ==================== DADOS ====================
+    let vendedores = [];
+    let clientes = [];
+    let nextVendedorId = 1;
+    let nextClienteId = 1;
+
+    // ==================== CONFIGURAÇÃO NOTA FISCAL ====================
+    const CONFIG_NF_PADRAO = {
+        empresa: {
+            nome: "SANTYUS-SJ",
+            cnpj: "12.345.678/0001-90",
+            ie: "123.456.789.000",
+            telefone: "(21) 95941-6937",
+            endereco: "Rua Exemplo, 123 - Centro",
+            cidade: "São João - RJ",
+            email: "santyusj001@gmail.com",
+            regime: "Simples Nacional"
+        },
+        impostos: { icms: 18.00, pis: 1.65, cofins: 7.60 },
+        nf: { serie: "001", rodape: "*** NOTA FISCAL EMITIDA POR SISTEMA SANTYUS-SJ ***" }
+    };
+
+    // ==================== FUNÇÕES AUXILIARES ====================
+    function showToast(msg) {
+        let toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function fecharModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // ==================== VENDEDORES ====================
+    function carregarVendedores() {
+        const saved = localStorage.getItem('santyus_vendedores');
+        if (saved) {
+            vendedores = JSON.parse(saved);
+            nextVendedorId = Math.max(...vendedores.map(v => v.id), 0) + 1;
+        } else {
+            // Vendedor padrão
+            const hoje = new Date();
+            const expiracao = new Date(hoje);
+            expiracao.setDate(hoje.getDate() + 30);
+            vendedores = [{
+                id: 1, nome: "Vendedor Principal", login: "vendedor", senha: "venda123",
+                email: "vendedor@email.com", telefone: "(21) 99999-0001", status: "ativo",
+                dataContratacao: hoje.toISOString().split('T')[0],
+                dataExpiracao: expiracao.toISOString().split('T')[0]
+            }];
+            localStorage.setItem('santyus_vendedores', JSON.stringify(vendedores));
+            localStorage.setItem('santyus_vendedor', JSON.stringify({ usuario: "vendedor", senha: "venda123" }));
+            nextVendedorId = 2;
+        }
+        renderizarVendedores();
+    }
+
+    function renderizarVendedores() {
+        const tbody = document.getElementById('listaVendedores');
+        tbody.innerHTML = vendedores.map(v => `
+            <tr>
+                <td>${v.id}</td>
+                <td>${v.nome}</td>
+                <td><strong>${v.login}</strong></td>
+                <td>${v.email || '-'}</td>
+                <td>${v.telefone || '-'}</td>
+                <td class="${v.status === 'ativo' ? 'badge-ativo' : 'badge-inativo'}">${v.status === 'ativo' ? '✅ Ativo' : '❌ Inativo'}</td>
+                <td>
+                    <button class="btn-primary" onclick="editarVendedor(${v.id})" style="margin-right:5px;">Editar</button>
+                    <button class="btn-danger" onclick="deletarVendedor(${v.id})">Remover</button>
+                 </td>
+            </tr>
+        `).join('');
+    }
+
+    function editarVendedor(id) {
+        const v = vendedores.find(v => v.id === id);
+        if (v) {
+            document.getElementById('editVendedorId').value = v.id;
+            document.getElementById('vendedorNome').value = v.nome;
+            document.getElementById('vendedorLogin').value = v.login;
+            document.getElementById('vendedorSenha').value = '';
+            document.getElementById('vendedorEmail').value = v.email || '';
+            document.getElementById('vendedorTelefone').value = v.telefone || '';
+            document.getElementById('vendedorStatus').value = v.status;
+            document.getElementById('modalVendedorTitulo').innerHTML = 'Editar Vendedor';
+            document.getElementById('vendedorModal').style.display = 'flex';
+        }
+    }
+
+    function deletarVendedor(id) {
+        if (confirm('Remover este vendedor?')) {
+            vendedores = vendedores.filter(v => v.id !== id);
+            localStorage.setItem('santyus_vendedores', JSON.stringify(vendedores));
+            renderizarVendedores();
+            showToast('Vendedor removido!');
+        }
+    }
+
+    function salvarVendedor() {
+        const id = document.getElementById('editVendedorId').value;
+        const nome = document.getElementById('vendedorNome').value;
+        const login = document.getElementById('vendedorLogin').value;
+        const senha = document.getElementById('vendedorSenha').value;
+        const email = document.getElementById('vendedorEmail').value;
+        const telefone = document.getElementById('vendedorTelefone').value;
+        const status = document.getElementById('vendedorStatus').value;
+
+        if (!nome || !login) { showToast('Nome e login são obrigatórios!'); return; }
+
+        const hoje = new Date();
+        const dataExpiracao = new Date(hoje);
+        dataExpiracao.setDate(hoje.getDate() + 30);
+
+        if (id) {
+            const idx = vendedores.findIndex(v => v.id == id);
+            if (idx !== -1) {
+                vendedores[idx].nome = nome;
+                vendedores[idx].login = login;
+                if (senha) vendedores[idx].senha = senha;
+                vendedores[idx].email = email;
+                vendedores[idx].telefone = telefone;
+                vendedores[idx].status = status;
+                showToast('Vendedor atualizado!');
+            }
+        } else {
+            const novoId = nextVendedorId++;
+            vendedores.push({
+                id: novoId, nome, login, senha: senha || 'venda123',
+                email, telefone, status, dataContratacao: hoje.toISOString().split('T')[0],
+                dataExpiracao: dataExpiracao.toISOString().split('T')[0]
+            });
+            showToast('Vendedor contratado por 30 dias!');
+        }
+        localStorage.setItem('santyus_vendedores', JSON.stringify(vendedores));
+        renderizarVendedores();
+        fecharModal('vendedorModal');
+    }
+
+    // ==================== CLIENTES ====================
+    function carregarClientes() {
+        const saved = localStorage.getItem('santyus_clientes');
+        if (saved) {
+            clientes = JSON.parse(saved);
+            nextClienteId = Math.max(...clientes.map(c => c.id), 0) + 1;
+        } else {
+            clientes = [
+                { id: 1, nome: "Carlos Silva", login: "carlos", senha: "123456", email: "carlos@email.com", telefone: "(21) 99999-1111", status: "ativo" }
+            ];
+            localStorage.setItem('santyus_clientes', JSON.stringify(clientes));
+            nextClienteId = 2;
+        }
+        renderizarClientes();
+    }
+
+    function renderizarClientes() {
+        const tbody = document.getElementById('listaClientes');
+        tbody.innerHTML = clientes.map(c => `
+            <tr>
+                <td>${c.id}</td>
+                <td>${c.nome}</td>
+                <td><strong>${c.login}</strong></td>
+                <td>${c.email || '-'}</td>
+                <td>${c.telefone || '-'}</td>
+                <td class="${c.status === 'ativo' ? 'badge-ativo' : 'badge-inativo'}">${c.status === 'ativo' ? '✅ Ativo' : '❌ Inativo'}</td>
+                <td>
+                    <button class="btn-primary" onclick="editarCliente(${c.id})" style="margin-right:5px;">Editar</button>
+                    <button class="btn-danger" onclick="deletarCliente(${c.id})">Remover</button>
+                 </td>
+            </tr>
+        `).join('');
+    }
+
+    function editarCliente(id) {
+        const c = clientes.find(c => c.id === id);
+        if (c) {
+            document.getElementById('editClienteId').value = c.id;
+            document.getElementById('clienteNome').value = c.nome;
+            document.getElementById('clienteLogin').value = c.login;
+            document.getElementById('clienteSenha').value = '';
+            document.getElementById('clienteEmail').value = c.email || '';
+            document.getElementById('clienteTelefone').value = c.telefone || '';
+            document.getElementById('clienteStatus').value = c.status;
+            document.getElementById('modalClienteTitulo').innerHTML = 'Editar Cliente';
+            document.getElementById('clienteModal').style.display = 'flex';
+        }
+    }
+
+    function deletarCliente(id) {
+        if (confirm('Remover este cliente?')) {
+            clientes = clientes.filter(c => c.id !== id);
+            localStorage.setItem('santyus_clientes', JSON.stringify(clientes));
+            renderizarClientes();
+            showToast('Cliente removido!');
+        }
+    }
+
+    function salvarCliente() {
+        const id = document.getElementById('editClienteId').value;
+        const nome = document.getElementById('clienteNome').value;
+        const login = document.getElementById('clienteLogin').value;
+        const senha = document.getElementById('clienteSenha').value;
+        const email = document.getElementById('clienteEmail').value;
+        const telefone = document.getElementById('clienteTelefone').value;
+        const status = document.getElementById('clienteStatus').value;
+
+        if (!nome || !login) { showToast('Nome e login são obrigatórios!'); return; }
+
+        if (id) {
+            const idx = clientes.findIndex(c => c.id == id);
+            if (idx !== -1) {
+                clientes[idx].nome = nome;
+                clientes[idx].login = login;
+                if (senha) clientes[idx].senha = senha;
+                clientes[idx].email = email;
+                clientes[idx].telefone = telefone;
+                clientes[idx].status = status;
+                showToast('Cliente atualizado!');
+            }
+        } else {
+            const novoId = nextClienteId++;
+            clientes.push({ id: novoId, nome, login, senha: senha || '123456', email, telefone, status });
+            showToast('Cliente criado!');
+        }
+        localStorage.setItem('santyus_clientes', JSON.stringify(clientes));
+        renderizarClientes();
+        fecharModal('clienteModal');
+    }
+
+    // ==================== CONFIGURAÇÃO NOTA FISCAL ====================
+    function carregarConfigNF() {
+        const saved = localStorage.getItem('santyus_config_nf');
+        let config = saved ? JSON.parse(saved) : CONFIG_NF_PADRAO;
+        if (!saved) localStorage.setItem('santyus_config_nf', JSON.stringify(config));
+
+        document.getElementById('empresaNome').value = config.empresa.nome;
+        document.getElementById('empresaCnpj').value = config.empresa.cnpj;
+        document.getElementById('empresaIe').value = config.empresa.ie;
+        document.getElementById('empresaTelefone').value = config.empresa.telefone;
+        document.getElementById('empresaEndereco').value = config.empresa.endereco;
+        document.getElementById('empresaCidade').value = config.empresa.cidade;
+        document.getElementById('empresaEmail').value = config.empresa.email;
+        document.getElementById('empresaRegime').value = config.empresa.regime;
+        document.getElementById('aliquotaIcms').value = config.impostos.icms;
+        document.getElementById('aliquotaPis').value = config.impostos.pis;
+        document.getElementById('aliquotaCofins').value = config.impostos.cofins;
+        document.getElementById('nfSerie').value = config.nf.serie;
+        document.getElementById('nfRodape').value = config.nf.rodape;
+    }
+
+    function salvarConfigNF() {
+        const novaConfig = {
+            empresa: {
+                nome: document.getElementById('empresaNome').value,
+                cnpj: document.getElementById('empresaCnpj').value,
+                ie: document.getElementById('empresaIe').value,
+                telefone: document.getElementById('empresaTelefone').value,
+                endereco: document.getElementById('empresaEndereco').value,
+                cidade: document.getElementById('empresaCidade').value,
+                email: document.getElementById('empresaEmail').value,
+                regime: document.getElementById('empresaRegime').value
+            },
+            impostos: {
+                icms: parseFloat(document.getElementById('aliquotaIcms').value) || 18,
+                pis: parseFloat(document.getElementById('aliquotaPis').value) || 1.65,
+                cofins: parseFloat(document.getElementById('aliquotaCofins').value) || 7.6
+            },
+            nf: {
+                serie: document.getElementById('nfSerie').value,
+                rodape: document.getElementById('nfRodape').value
+            }
+        };
+        localStorage.setItem('santyus_config_nf', JSON.stringify(novaConfig));
+        showToast('✅ Configurações salvas!');
+    }
+
+    function restaurarPadraoNF() {
+        localStorage.setItem('santyus_config_nf', JSON.stringify(CONFIG_NF_PADRAO));
+        carregarConfigNF();
+        showToast('🔄 Configurações restauradas!');
+    }
+
+    // ==================== LOGIN ====================
+    function loginAdmin() {
+        const user = document.getElementById('adminUser').value;
+        const pass = document.getElementById('adminPass').value;
+        if (user === adminCredencial.usuario && pass === adminCredencial.senha) {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+            carregarVendedores();
+            carregarClientes();
+            carregarConfigNF();
+        } else {
+            document.getElementById('loginError').innerHTML = '❌ Usuário ou senha incorretos';
+            document.getElementById('loginError').style.display = 'block';
+        }
+    }
+
+    function logoutAdmin() {
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('dashboardScreen').style.display = 'none';
+        document.getElementById('adminUser').value = '';
+        document.getElementById('adminPass').value = '';
+        document.getElementById('loginError').style.display = 'none';
+    }
+
+    // ==================== ABAS ====================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            const tabId = btn.dataset.tab;
+            document.getElementById(`tab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`).classList.add('active');
+        });
+    });
+
+    // ==================== EVENTOS ====================
+    document.getElementById('btnNovoVendedor').addEventListener('click', () => {
+        document.getElementById('editVendedorId').value = '';
+        document.getElementById('vendedorNome').value = '';
+        document.getElementById('vendedorLogin').value = '';
+        document.getElementById('vendedorSenha').value = '';
+        document.getElementById('vendedorEmail').value = '';
+        document.getElementById('vendedorTelefone').value = '';
+        document.getElementById('vendedorStatus').value = 'ativo';
+        document.getElementById('modalVendedorTitulo').innerHTML = 'Contratar Vendedor';
+        document.getElementById('vendedorModal').style.display = 'flex';
+    });
+    document.getElementById('salvarVendedorBtn').addEventListener('click', salvarVendedor);
+    document.getElementById('btnNovoCliente').addEventListener('click', () => {
+        document.getElementById('editClienteId').value = '';
+        document.getElementById('clienteNome').value = '';
+        document.getElementById('clienteLogin').value = '';
+        document.getElementById('clienteSenha').value = '';
+        document.getElementById('clienteEmail').value = '';
+        document.getElementById('clienteTelefone').value = '';
+        document.getElementById('clienteStatus').value = 'ativo';
+        document.getElementById('modalClienteTitulo').innerHTML = 'Novo Cliente';
+        document.getElementById('clienteModal').style.display = 'flex';
+    });
+    document.getElementById('salvarClienteBtn').addEventListener('click', salvarCliente);
+    document.getElementById('salvarConfigBtn').addEventListener('click', salvarConfigNF);
+    document.getElementById('restaurarPadraoBtn').addEventListener('click', restaurarPadraoNF);
+
+    window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+    document.getElementById('adminPass').addEventListener('keypress', (e) => { if (e.key === 'Enter') loginAdmin(); });
+</script>
+</body>
+</html>
