@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SISMEGA PDV PROFESSIONAL - Sistema Multi-Loja com Licenças</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+
+        body.theme-dark {
+            --bg-primary: #0a0e1a;
+            --bg-card: rgba(18, 28, 45, 0.95);
+            --text-primary: #ffffff;
+            --text-secondary: #aac8ff;
+            --border-color: rgba(0, 255, 255, 0.2);
+            --input-bg: rgba(0, 0, 0, 0.5);
+            --card-bg: linear-gradient(135deg, rgba(0, 50, 70, 0.6), rgba(0, 20, 40, 0.8));
+            --hover-glow: rgba(0, 255, 255, 0.3);
+            --success: #00cc44;
+            --danger: #ff4444;
+            --warning: #ff6600;
+        }
+
+        body.theme-light {
+            --bg-primary: #e8f0ff;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #1a1a2e;
+            --text-secondary: #2c3e66;
+            --border-color: rgba(0, 100, 150, 0.3);
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --card-bg: linear-gradient(135deg, rgba(200, 220, 250, 0.8), rgba(180, 200, 240, 0.9));
+            --hover-glow: rgba(0, 100, 150, 0.2);
+            --success: #008800;
+            --danger: #cc0000;
+            --warning: #cc5500;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .custom-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            transition: all 0.5s;
+        }
+
+        .app-wrapper {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            gap: 2rem;
+        }
+
+        .logo-area {
+            text-align: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-area h1 {
+            color: #0ff;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px rgba(0,255,255,0.5);
+        }
+
+        .store-info {
+            background: var(--hover-glow);
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-radius: 1.5rem;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .pdv-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 1.5rem;
+            height: calc(100vh - 100px);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            max-height: calc(100vh - 220px);
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px var(--hover-glow);
+            border-color: #0ff;
+        }
+
+        button {
+            background: linear-gradient(135deg, #0ff, #0a8);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+            color: #000;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--hover-glow);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #aa0000);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #006600);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #cc4400);
+            color: white;
+        }
+
+        input, select, textarea {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 10px;
+            color: var(--text-primary);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 2rem;
+            padding: 2rem;
+            min-width: 400px;
+            max-width: 500px;
+        }
+
+        .payment-option {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .payment-btn {
+            padding: 15px;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .payment-btn.dinheiro { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .payment-btn.debito { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .payment-btn.credito { background: linear-gradient(135deg, #e67e22, #d35400); }
+        .payment-btn.pix { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+        .nav-btn {
+            background: rgba(20, 30, 50, 0.6);
+            color: var(--text-secondary);
+            text-align: left;
+            padding: 12px;
+            margin: 5px 0;
+            width: 100%;
+        }
+
+        .nav-btn:hover {
+            background: var(--hover-glow);
+            color: #0ff;
+            transform: translateX(5px);
+        }
+
+        .nav-btn.active {
+            background: rgba(0, 255, 255, 0.3);
+            color: #0ff;
+            border-left: 3px solid #0ff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .cart-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: right;
+            padding-top: 1rem;
+            border-top: 2px solid #0ff;
+        }
+
+        .pending-sale {
+            background: rgba(255, 100, 0, 0.2);
+            border-left: 3px solid #ff6600;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+        .license-card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-active {
+            color: #0f0;
+            font-weight: bold;
+        }
+
+        .status-blocked {
+            color: #f00;
+            font-weight: bold;
+        }
+
+        .days-badge {
+            background: #0ff;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="theme-dark">
+<div class="custom-bg" id="customBg"></div>
+<div id="app"></div>
+
+<script>
+    // ==================== CONFIGURAÇÃO COM LICENÇAS POR LOJA ====================
+    let stores = {
+        papelaria: {
+            id: 'papelaria',
+            name: '📘 Papelaria Criativa',
+            license: {
+                active: true,
+                startDate: new Date().toISOString(),
+                daysLeft: 30,
+                lastPayment: new Date().toISOString()
+            },
+            products: [
+                { id: '1', code: 'CAN001', name: 'Caneta Esferográfica Azul', price: 2.50, stock: 50, barcode: '78910001' },
+                { id: '2', code: 'CAD002', name: 'Caderno 10 Matérias', price: 24.90, stock: 20, barcode: '78910002' },
+                { id: '3', code: 'BOR003', name: 'Borracha Branca', price: 1.20, stock: 100, barcode: '78910003' },
+                { id: '4', code: 'LAP004', name: 'Lápis Grafite HB', price: 1.00, stock: 200, barcode: '78910004' },
+                { id: '5', code: 'REG005', name: 'Régua 30cm', price: 3.50, stock: 45, barcode: '78910005' }
+            ],
+            users: {
+                admin: { password: 'admin123', role: 'admin', name: 'Administrador' },
+                operador: { password: 'oper123', role: 'operator', name: 'João Silva' },
+                caixa: { password: 'caixa123', role: 'operator', name: 'Caixa' }
+            },
+            sales: [],
+            pendingSales: []
+        },
+        padaria: {
+            id: 'padaria',
+            name: '🥖 Padaria Pão Quente',
+            license: {
+                active: true,
+                startDate: new Date().toISOString(),
+                daysLeft: 15,
+                lastPayment: new Date().toISOString()
+            },
+            products: [
+                { id: '101', code: 'PAO001', name: 'Pão Francês', price: 0.75, stock: 150, barcode: '88820001' },
+                { id: '102', code: 'BOL002', name: 'Bolo de Chocolate', price: 32.00, stock: 8, barcode: '88820002' },
+                { id: '103', code: 'LEI003', name: 'Leite Integral', price: 4.50, stock: 30, barcode: '88820003' }
+            ],
+            users: {
+                admin: { password: 'admin456', role: 'admin', name: 'Administrador Padaria' },
+                operador: { password: 'oper456', role: 'operator', name: 'Maria Santos' }
+            },
+            sales: [],
+            pendingSales: []
+        }
+    };
+
+    let currentStore = 'papelaria';
+    let currentUser = null;
+    let cart = [];
+    let currentScreen = 'login';
+    let pendingPaymentSale = null;
+
+    // ==================== FUNÇÕES DE LICENÇA POR LOJA ====================
+    function checkStoreLicense(storeId) {
+        const store = stores[storeId];
+        if (!store || !store.license) return false;
+        
+        if (!store.license.active) return false;
+        
+        const startDate = new Date(store.license.startDate);
+        const today = new Date();
+        const diffDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+        const daysLeft = store.license.daysLeft - diffDays;
+        
+        if (daysLeft <= 0) {
+            store.license.active = false;
+            saveData();
+            return false;
+        }
+        
+        store.license.daysLeft = daysLeft;
+        saveData();
+        return true;
+    }
+
+    function getStoreDaysLeft(storeId) {
+        const store = stores[storeId];
+        if (!store || !store.license || !store.license.active) return 0;
+        const startDate = new Date(store.license.startDate);
+        const today = new Date();
+        const diffDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+        return Math.max(0, store.license.daysLeft - diffDays);
+    }
+
+    function activateStoreLicense(storeId, days) {
+        const store = stores[storeId];
+        if (store) {
+            store.license = {
+                active: true,
+                startDate: new Date().toISOString(),
+                daysLeft: days,
+                lastPayment: new Date().toISOString()
+            };
+            saveData();
+            return true;
+        }
+        return false;
+    }
+
+    function blockStoreLicense(storeId) {
+        const store = stores[storeId];
+        if (store) {
+            store.license.active = false;
+            saveData();
+            return true;
+        }
+        return false;
+    }
+
+    // ==================== GERENCIAMENTO ====================
+    function saveData() {
+        localStorage.setItem('sismega_stores_licenses', JSON.stringify(stores));
+        const theme = document.body.className;
+        localStorage.setItem('sismega_theme', theme);
+    }
+
+    function loadData() {
+        const saved = localStorage.getItem('sismega_stores_licenses');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            // Preservar as vendas e produtos existentes
+            for (let storeId in parsed) {
+                if (stores[storeId]) {
+                    parsed[storeId].products = stores[storeId].products;
+                    parsed[storeId].sales = stores[storeId].sales || [];
+                    parsed[storeId].pendingSales = stores[storeId].pendingSales || [];
+                }
+                stores[storeId] = parsed[storeId];
+            }
+        }
+        const savedTheme = localStorage.getItem('sismega_theme');
+        if (savedTheme) document.body.className = savedTheme;
+        saveData();
+    }
+    loadData();
+
+    function formatMoney(value) {
+        return `R$ ${value.toFixed(2)}`;
+    }
+
+    // ==================== FUNÇÕES DO PDV ====================
+    function addToCart(product, quantity = 1) {
+        if (product.stock < quantity) {
+            alert(`Estoque insuficiente! Disponível: ${product.stock}`);
+            return false;
+        }
+        const existing = cart.find(item => item.product.id === product.id);
+        if (existing) {
+            if (existing.quantity + quantity > product.stock) {
+                alert(`Limite de estoque atingido`);
+                return false;
+            }
+            existing.quantity += quantity;
+        } else {
+            cart.push({ product, quantity });
+        }
+        renderApp();
+        return true;
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        renderApp();
+    }
+
+    function addProduct(productData) {
+        const newProduct = {
+            id: Date.now().toString(),
+            code: productData.code,
+            name: productData.name,
+            price: parseFloat(productData.price),
+            stock: parseInt(productData.stock),
+            barcode: productData.barcode || productData.code
+        };
+        stores[currentStore].products.push(newProduct);
+        saveData();
+        renderApp();
+        return newProduct;
+    }
+
+    function updateStock(productId, newStock) {
+        const product = stores[currentStore].products.find(p => p.id === productId);
+        if (product) product.stock = Math.max(0, parseInt(newStock));
+        saveData();
+        renderApp();
+    }
+
+    function deleteProduct(productId) {
+        if (confirm('Excluir este produto permanentemente?')) {
+            stores[currentStore].products = stores[currentStore].products.filter(p => p.id !== productId);
+            saveData();
+            renderApp();
+        }
+    }
+
+    function openPaymentModal() {
+        if (cart.length === 0) {
+            alert('Carrinho vazio!');
+            return;
+        }
+        pendingPaymentSale = { cart: [...cart], total: cart.reduce((s, i) => s + (i.product.price * i.quantity), 0) };
+        renderPaymentModal();
+    }
+
+    function processPayment(method, receivedValue = null) {
+        if (!pendingPaymentSale) return;
+        
+        let change = 0;
+        if (method === 'dinheiro' && receivedValue) {
+            change = receivedValue - pendingPaymentSale.total;
+            if (change < 0) {
+                alert('Valor insuficiente!');
+                return;
+            }
+        }
+        
+        const sale = {
+            id: Date.now(),
+            date: new Date().toLocaleString(),
+            items: pendingPaymentSale.cart,
+            total: pendingPaymentSale.total,
+            paymentMethod: method,
+            change: change,
+            operator: currentUser.name,
+            store: stores[currentStore].name
+        };
+        
+        for (let item of pendingPaymentSale.cart) {
+            const prod = stores[currentStore].products.find(p => p.id === item.product.id);
+            if (prod) prod.stock -= item.quantity;
+        }
+        
+        stores[currentStore].sales.unshift(sale);
+        saveData();
+        
+        let receipt = `🏪 ${stores[currentStore].name}\n`;
+        receipt += `VENDA REALIZADA\n`;
+        receipt += `${'='.repeat(40)}\n`;
+        receipt += `Data: ${sale.date}\n`;
+        receipt += `Operador: ${currentUser.name}\n`;
+        receipt += `Pagamento: ${method.toUpperCase()}\n`;
+        receipt += `${'='.repeat(40)}\n`;
+        sale.items.forEach(i => {
+            receipt += `${i.product.name} x${i.quantity} = ${formatMoney(i.product.price * i.quantity)}\n`;
+        });
+        receipt += `${'='.repeat(40)}\n`;
+        receipt += `TOTAL: ${formatMoney(sale.total)}\n`;
+        if (method === 'dinheiro') {
+            receipt += `Valor recebido: ${formatMoney(receivedValue)}\n`;
+            receipt += `Troco: ${formatMoney(change)}\n`;
+        }
+        receipt += `\nObrigado pela preferência!`;
+        
+        alert(receipt);
+        cart = [];
+        pendingPaymentSale = null;
+        renderApp();
+    }
+
+    function saveAsPending() {
+        if (cart.length === 0) return;
+        stores[currentStore].pendingSales.push({
+            id: Date.now(),
+            date: new Date().toLocaleString(),
+            cart: [...cart],
+            total: cart.reduce((s, i) => s + (i.product.price * i.quantity), 0)
+        });
+        cart = [];
+        saveData();
+        alert('Venda salva como pendente!');
+        renderApp();
+    }
+
+    function loadPendingSale(index) {
+        const pending = stores[currentStore].pendingSales[index];
+        if (pending) {
+            cart = pending.cart;
+            stores[currentStore].pendingSales.splice(index, 1);
+            saveData();
+            renderApp();
+        }
+    }
+
+    function renderPaymentModal() {
+        const total = pendingPaymentSale.total;
+        const modalHtml = `
+            <div class="modal" id="paymentModal">
+                <div class="modal-content">
+                    <h2 style="color: #0ff;">💳 Forma de Pagamento</h2>
+                    <div style="font-size: 2rem; text-align: center; margin: 1rem 0;">${formatMoney(total)}</div>
+                    <div class="payment-option">
+                        <button class="payment-btn dinheiro" onclick="window.showCashInput()">💵 Dinheiro</button>
+                        <button class="payment-btn debito" onclick="window.processPayment('débito')">💳 Débito</button>
+                        <button class="payment-btn credito" onclick="window.processPayment('crédito')">💳 Crédito</button>
+                        <button class="payment-btn pix" onclick="window.processPayment('pix')">📱 PIX</button>
+                    </div>
+                    <button onclick="window.closeModal()" style="width: 100%; margin-top: 1rem;">Cancelar</button>
+                </div>
+            </div>
+        `;
+        document.getElementById('app').insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    window.showCashInput = function() {
+        const total = pendingPaymentSale.total;
+        const cashHtml = `
+            <div class="modal" id="cashModal">
+                <div class="modal-content">
+                    <h3>💵 Pagamento em Dinheiro</h3>
+                    <div>Total: ${formatMoney(total)}</div>
+                    <input type="number" id="cashValue" placeholder="Valor recebido" step="0.01" style="width: 100%; margin: 1rem 0;">
+                    <button onclick="window.calculateChange()">Calcular Troco</button>
+                    <div id="changeDisplay" style="margin: 1rem 0; font-size: 1.2rem;"></div>
+                    <button onclick="window.confirmCash()" class="btn-success">Confirmar Pagamento</button>
+                    <button onclick="window.closeModal()" style="margin-top: 0.5rem;">Voltar</button>
+                </div>
+            </div>
+        `;
+        document.getElementById('paymentModal')?.remove();
+        document.getElementById('app').insertAdjacentHTML('beforeend', cashHtml);
+    };
+
+    window.calculateChange = function() {
+        const received = parseFloat(document.getElementById('cashValue')?.value);
+        if (received && pendingPaymentSale) {
+            const change = received - pendingPaymentSale.total;
+            document.getElementById('changeDisplay').innerHTML = change >= 0 ? `Troco: ${formatMoney(change)}` : `Faltam: ${formatMoney(Math.abs(change))}`;
+        }
+    };
+
+    window.confirmCash = function() {
+        const received = parseFloat(document.getElementById('cashValue')?.value);
+        if (received && received >= pendingPaymentSale.total) {
+            processPayment('dinheiro', received);
+            closeModal();
+        } else {
+            alert('Valor insuficiente!');
+        }
+    };
+
+    window.closeModal = function() {
+        document.querySelectorAll('.modal').forEach(m => m.remove());
+        pendingPaymentSale = null;
+        renderApp();
+    };
+
+    // ==================== TELAS ====================
+    function renderLogin() {
+        return `
+            <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+                <div class="glass-card" style="width: 420px; text-align: center;">
+                    <div class="logo-area" style="border-bottom: none;">
+                        <h1 style="font-size: 2.2rem;">🏪 SISMEGA PDV</h1>
+                        <p style="color: var(--text-secondary);">Sistema Profissional de Automação Comercial</p>
+                    </div>
+                    <select id="storeSelect" style="width:100%; margin: 0.8rem 0; padding: 12px;">
+                        ${Object.keys(stores).map(id => {
+                            const daysLeft = getStoreDaysLeft(id);
+                            const isActive = checkStoreLicense(id);
+                            return `<option value="${id}">${stores[id].name} - ${isActive ? `✅ Ativo (${daysLeft} dias)` : '🔒 Bloqueado'}</option>`;
+                        }).join('')}
+                    </select>
+                    <input type="text" id="username" placeholder="Usuário" style="width:100%; margin: 0.8rem 0; padding: 12px;">
+                    <input type="password" id="password" placeholder="Senha" style="width:100%; margin: 0.8rem 0; padding: 12px;">
+                    <button id="loginBtn" style="width:100%; padding: 12px; font-size: 1rem;">🔓 Entrar no Sistema</button>
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                        <p style="font-size: 0.8rem; color: var(--text-secondary);">📘 Papelaria: admin/admin123 | operador/oper123</p>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary);">🥖 Padaria: admin/admin456 | operador/oper456</p>
+                        <p style="font-size: 0.8rem; color: #0ff;">👨‍💻 Desenvolvedor: dev/dev123</p>
+                    </div>
+                    <button onclick="window.toggleTheme()" style="margin-top: 15px; width:100%;">🎨 Alterar Tema</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderDevPanel() {
+        return `
+            <div class="app-wrapper">
+                <div class="sidebar">
+                    <div class="logo-area">
+                        <h1>🔧 DEV PANEL</h1>
+                        <p>Controle de Licenças</p>
+                    </div>
+                    <div class="nav-menu">
+                        <button class="nav-btn active" onclick="window.changeScreen('dev')">📊 Dashboard</button>
+                        <button class="nav-btn" onclick="window.logout()">🚪 Sair</button>
+                    </div>
+                </div>
+                <div class="main-content">
+                    <div class="glass-card">
+                        <h2 style="color: #0ff; margin-bottom: 1rem;">🔧 Painel do Desenvolvedor - Controle de Licenças</h2>
+                        
+                        <h3>🏪 Gerenciar Licenças das Lojas</h3>
+                        <div style="margin-top: 1rem;">
+                            ${Object.keys(stores).map(storeId => {
+                                const store = stores[storeId];
+                                const daysLeft = getStoreDaysLeft(storeId);
+                                const isActive = checkStoreLicense(storeId);
+                                return `
+                                    <div class="license-card">
+                                        <div>
+                                            <strong style="font-size: 1.1rem;">${store.name}</strong><br>
+                                            <span>ID: ${storeId}</span><br>
+                                            <span class="${isActive ? 'status-active' : 'status-blocked'}">${isActive ? '✅ ATIVO' : '🔒 BLOQUEADO'}</span>
+                                            ${isActive ? `<span class="days-badge" style="margin-left: 10px;">📅 ${daysLeft} dias restantes</span>` : ''}
+                                        </div>
+                                        <div>
+                                            ${isActive ? `
+                                                <button onclick="window.blockStoreLicense('${storeId}')" class="btn-danger" style="margin-right: 5px;">🔒 Bloquear</button>
+                                                <input type="number" id="days_${storeId}" placeholder="+dias" style="width: 80px; margin-left: 5px;">
+                                                <button onclick="window.addDaysToStore('${storeId}')" class="btn-success">➕ Adicionar Dias</button>
+                                            ` : `
+                                                <input type="number" id="days_${storeId}" placeholder="Dias" style="width: 100px;">
+                                                <button onclick="window.activateStoreLicense('${storeId}')" class="btn-success">✅ Ativar Licença</button>
+                                            `}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3 style="color: #0ff;">➕ Criar Nova Loja / Cliente</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <input type="text" id="newStoreId" placeholder="ID da loja (ex: petshop)" style="width:100%; margin: 0.5rem 0;">
+                                <input type="text" id="newStoreName" placeholder="Nome da loja" style="width:100%; margin: 0.5rem 0;">
+                                <input type="number" id="newStoreDays" placeholder="Dias de licença inicial" style="width:100%; margin: 0.5rem 0;">
+                                <button onclick="window.createNewStore()" style="width:100%;">➕ Criar Nova Loja</button>
+                            </div>
+                            <div>
+                                <h4>🎨 Personalização do Sistema</h4>
+                                <input type="text" id="bgImageUrl" placeholder="URL da imagem de fundo" style="width:100%; margin: 0.5rem 0;">
+                                <button onclick="window.setBackground()" style="width:100%; margin: 0.3rem 0;">🖼️ Aplicar Fundo</button>
+                                <button onclick="window.resetBackground()" style="width:100%; margin: 0.3rem 0;">🗑️ Remover Fundo</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3 style="color: #0ff;">📈 Estatísticas do Sistema</h3>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                            <div>🏪 Total de Lojas: <strong>${Object.keys(stores).length}</strong></div>
+                            <div>✅ Lojas Ativas: <strong>${Object.keys(stores).filter(id => checkStoreLicense(id)).length}</strong></div>
+                            <div>🔒 Lojas Bloqueadas: <strong>${Object.keys(stores).filter(id => !checkStoreLicense(id)).length}</strong></div>
+                            <div>📦 Total de Produtos: <strong>${Object.values(stores).reduce((acc, s) => acc + s.products.length, 0)}</strong></div>
+                            <div>👥 Total de Usuários: <strong>${Object.values(stores).reduce((acc, s) => acc + Object.keys(s.users).length, 0)}</strong></div>
+                            <div>💰 Vendas Totais: <strong>${Object.values(stores).reduce((acc, s) => acc + s.sales.length, 0)}</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderAdminPanel() {
+        const store = stores[currentStore];
+        return `
+            <div class="app-wrapper">
+                <div class="sidebar">
+                    <div class="logo-area">
+                        <h1>SISMEGA PRO</h1>
+                        <p>Painel Administrativo</p>
+                    </div>
+                    <div class="store-info">
+                        <div style="font-weight: bold;">${store.name}</div>
+                        <div style="font-size: 0.8rem;">👑 ${currentUser.name}</div>
+                    </div>
+                    <div class="nav-menu">
+                        <button class="nav-btn" onclick="window.changeScreen('pdv')">💰 Frente de Caixa</button>
+                        <button class="nav-btn" onclick="window.changeScreen('history')">📊 Histórico de Vendas</button>
+                        <button class="nav-btn active" onclick="window.changeScreen('admin')">⚙️ Administração</button>
+                        <button class="nav-btn" onclick="window.logout()">🚪 Sair</button>
+                    </div>
+                </div>
+                <div class="main-content">
+                    <div class="glass-card">
+                        <h2 style="color: #0ff;">📦 Gerenciar Produtos e Estoque</h2>
+                        <div style="overflow-x: auto; margin-top: 1rem;">
+                            <table>
+                                <thead><tr><th>Código</th><th>Nome</th><th>Preço</th><th>Estoque</th><th>Código Barras</th><th>Ações</th></tr></thead>
+                                <tbody>
+                                    ${store.products.map(p => `
+                                        <tr>
+                                            <td>${p.code}</td>
+                                            <td>${p.name}</td>
+                                            <td>${formatMoney(p.price)}</td>
+                                            <td><input type="number" id="stock_${p.id}" value="${p.stock}" style="width: 80px;"><button onclick="window.updateStock('${p.id}')">Atualizar</button></td>
+                                            <td>${p.barcode}</td>
+                                            <td><button onclick="window.deleteProduct('${p.id}')" class="btn-danger">Excluir</button></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="glass-card">
+                        <h3 style="color: #0ff;">➕ Adicionar Novo Produto</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <input type="text" id="newCode" placeholder="Código">
+                            <input type="text" id="newName" placeholder="Nome">
+                            <input type="number" id="newPrice" placeholder="Preço" step="0.01">
+                            <input type="number" id="newStock" placeholder="Estoque">
+                            <input type="text" id="newBarcode" placeholder="Código Barras">
+                            <button onclick="window.addNewProduct()">Adicionar</button>
+                        </div>
+                    </div>
+                    <div class="glass-card">
+                        <h3 style="color: #0ff;">👥 Gerenciar Usuários</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <h4>Usuários Atuais:</h4>
+                                ${Object.entries(store.users).map(([u, data]) => `<div style="background: var(--hover-glow); padding: 5px; margin: 3px 0; border-radius: 5px;">👤 ${u} - ${data.role === 'admin' ? 'Admin' : 'Operador'}</div>`).join('')}
+                            </div>
+                            <div>
+                                <h4>Criar Novo Usuário</h4>
+                                <input type="text" id="newUserName" placeholder="Usuário" style="width:100%; margin: 0.5rem 0;">
+                                <input type="password" id="newUserPass" placeholder="Senha" style="width:100%; margin: 0.5rem 0;">
+                                <select id="newUserRole" style="width:100%; margin: 0.5rem 0;">
+                                    <option value="admin">Administrador</option>
+                                    <option value="operator">Operador</option>
+                                </select>
+                                <button onclick="window.addUser()">Criar Usuário</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderPOS() {
+        const store = stores[currentStore];
+        const cartTotal = cart.reduce((s, i) => s + (i.product.price * i.quantity), 0);
+        
+        setTimeout(() => {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.oninput = function() {
+                    const query = this.value.toLowerCase();
+                    const filtered = store.products.filter(p => 
+                        p.name.toLowerCase().includes(query) || 
+                        p.code.toLowerCase().includes(query) || 
+                        p.barcode.includes(query)
+                    );
+                    const grid = document.getElementById('productsGrid');
+                    if (grid) {
+                        grid.innerHTML = filtered.map(p => `
+                            <div class="product-card" onclick="window.quickAdd('${p.id}')">
+                                <strong>${p.name}</strong>
+                                <div class="product-price">${formatMoney(p.price)}</div>
+                                <div>📦 Estoque: ${p.stock}</div>
+                                <small>${p.barcode}</small>
+                            </div>
+                        `).join('');
+                    }
+                };
+                searchInput.focus();
+            }
+        }, 100);
+        
+        return `
+            <div class="app-wrapper">
+                <div class="sidebar">
+                    <div class="logo-area">
+                        <h1>SISMEGA PRO</h1>
+                        <button onclick="window.toggleTheme()" style="margin-top: 10px; padding: 5px 15px;">🎨 Tema</button>
+                    </div>
+                    <div class="store-info">
+                        <div style="font-weight: bold; font-size: 1.1rem;">${store.name}</div>
+                        <div style="font-size: 0.8rem;">👤 ${currentUser.name} (${currentUser.role === 'admin' ? 'Admin' : 'Operador'})</div>
+                    </div>
+                    <div class="nav-menu">
+                        <button class="nav-btn active" onclick="window.changeScreen('pdv')">💰 Frente de Caixa</button>
+                        <button class="nav-btn" onclick="window.changeScreen('history')">📊 Histórico</button>
+                        ${currentUser.role === 'admin' ? '<button class="nav-btn" onclick="window.changeScreen(\'admin\')">⚙️ Administração</button>' : ''}
+                        <button class="nav-btn" onclick="window.logout()">🚪 Sair</button>
+                    </div>
+                </div>
+                <div class="main-content">
+                    <div class="pdv-container">
+                        <div>
+                            <input type="text" id="searchInput" placeholder="🔍 Buscar por nome, código ou código de barras..." style="width:100%; padding: 12px; margin-bottom: 1rem; border-radius: 2rem;">
+                            <div class="products-grid" id="productsGrid">
+                                ${store.products.map(p => `
+                                    <div class="product-card" onclick="window.quickAdd('${p.id}')">
+                                        <strong>${p.name}</strong>
+                                        <div class="product-price">${formatMoney(p.price)}</div>
+                                        <div>📦 Estoque: ${p.stock}</div>
+                                        <small>${p.barcode}</small>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="glass-card" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <h3 style="color: #0ff;">🛒 Carrinho de Compras</h3>
+                            <div style="flex: 1; max-height: 400px; overflow-y: auto;">
+                                ${cart.length === 0 ? '<div style="text-align: center; color: var(--text-secondary);">Carrinho vazio</div>' : 
+                                    cart.map((item, idx) => `
+                                        <div class="cart-item">
+                                            <div><strong>${item.product.name}</strong><br>${item.quantity} x ${formatMoney(item.product.price)}</div>
+                                            <div>${formatMoney(item.product.price * item.quantity)} <button onclick="window.removeFromCart(${idx})" style="padding: 5px 10px;">✖</button></div>
+                                        </div>
+                                    `).join('')
+                                }
+                            </div>
+                            <div class="cart-total">TOTAL: ${formatMoney(cartTotal)}</div>
+                            <button onclick="window.openPaymentModal()" class="btn-success" style="width:100%; padding: 12px;">💵 Finalizar Venda</button>
+                            <button onclick="window.saveAsPending()" class="btn-warning" style="width:100%; padding: 12px;">⏸️ Suspender Venda</button>
+                        </div>
+                    </div>
+                    ${store.pendingSales.length > 0 ? `
+                        <div class="glass-card" style="margin-top: 1rem;">
+                            <h3 style="color: #ff6600;">⏳ Vendas Suspensas</h3>
+                            ${store.pendingSales.map((s, idx) => `<div class="pending-sale" onclick="window.loadPendingSale(${idx})">📅 ${s.date} - Total: ${formatMoney(s.total)} - ${s.cart.length} itens</div>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderSalesHistory() {
+        const sales = stores[currentStore].sales;
+        const totalDinheiro = sales.filter(s => s.paymentMethod === 'dinheiro').reduce((s, v) => s + v.total, 0);
+        const totalDebito = sales.filter(s => s.paymentMethod === 'débito').reduce((s, v) => s + v.total, 0);
+        const totalCredito = sales.filter(s => s.paymentMethod === 'crédito').reduce((s, v) => s + v.total, 0);
+        const totalPix = sales.filter(s => s.paymentMethod === 'pix').reduce((s, v) => s + v.total, 0);
+        const totalGeral = sales.reduce((s, v) => s + v.total, 0);
+        
+        return `
+            <div class="app-wrapper">
+                <div class="sidebar">
+                    <div class="logo-area"><h1>SISMEGA PRO</h1></div>
+                    <div class="store-info"><div>${stores[currentStore].name}</div><div>👤 ${currentUser.name}</div></div>
+                    <div class="nav-menu">
+                        <button class="nav-btn" onclick="window.changeScreen('pdv')">💰 Caixa</button>
+                        <button class="nav-btn active" onclick="window.changeScreen('history')">📊 Histórico</button>
+                        ${currentUser.role === 'admin' ? '<button class="nav-btn" onclick="window.changeScreen(\'admin\')">⚙️ Admin</button>' : ''}
+                        <button class="nav-btn" onclick="window.logout()">🚪 Sair</button>
+                    </div>
+                </div>
+                <div class="main-content">
+                    <div class="glass-card">
+                        <h2 style="color: #0ff;">📊 Extrato de Vendas</h2>
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin: 1.5rem 0;">
+                            <div style="background: rgba(46,204,113,0.2); padding: 1rem; border-radius: 1rem; text-align: center;"><div>💰 Dinheiro</div><div style="font-size: 1.3rem; font-weight: bold;">${formatMoney(totalDinheiro)}</div></div>
+                            <div style="background: rgba(52,152,219,0.2); padding: 1rem; border-radius: 1rem; text-align: center;"><div>💳 Débito</div><div style="font-size: 1.3rem; font-weight: bold;">${formatMoney(totalDebito)}</div></div>
+                            <div style="background: rgba(230,126,34,0.2); padding: 1rem; border-radius: 1rem; text-align: center;"><div>💳 Crédito</div><div style="font-size: 1.3rem; font-weight: bold;">${formatMoney(totalCredito)}</div></div>
+                            <div style="background: rgba(155,89,182,0.2); padding: 1rem; border-radius: 1rem; text-align: center;"><div>📱 PIX</div><div style="font-size: 1.3rem; font-weight: bold;">${formatMoney(totalPix)}</div></div>
+                            <div style="background: rgba(0,255,255,0.2); padding: 1rem; border-radius: 1rem; text-align: center;"><div>🏆 TOTAL</div><div style="font-size: 1.3rem; font-weight: bold;">${formatMoney(totalGeral)}</div></div>
+                        </div>
+                        ${sales.length === 0 ? '<div style="text-align: center; padding: 2rem;">Nenhuma venda registrada</div>' : `
+                            <div style="overflow-x: auto;">
+                                <table><thead><tr><th>Data</th><th>Operador</th><th>Itens</th><th>Total</th><th>Pagamento</th><th>Troco</th></tr></thead>
+                                <tbody>${sales.map(s => `<tr><td>${s.date}</td><td>${s.operator}</td><td>${s.items.length}</td><td>${formatMoney(s.total)}</td><td>${s.paymentMethod}</td><td>${s.change ? formatMoney(s.change) : '-'}</td></tr>`).join('')}</tbody>
+                            </table>
+                            </div>
+                        `}
+                        <button onclick="window.changeScreen('pdv')" style="margin-top: 1rem;">← Voltar ao Caixa</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ==================== FUNÇÕES GLOBAIS ====================
+    window.quickAdd = (id) => { const p = stores[currentStore].products.find(p => p.id === id); if(p) addToCart(p,1); };
+    window.removeFromCart = removeFromCart;
+    window.openPaymentModal = openPaymentModal;
+    window.processPayment = processPayment;
+    window.saveAsPending = saveAsPending;
+    window.loadPendingSale = loadPendingSale;
+    window.updateStock = updateStock;
+    window.deleteProduct = deleteProduct;
+    window.addNewProduct = () => {
+        const code = document.getElementById('newCode')?.value;
+        const name = document.getElementById('newName')?.value;
+        const price = document.getElementById('newPrice')?.value;
+        const stock = document.getElementById('newStock')?.value;
+        const barcode = document.getElementById('newBarcode')?.value;
+        if(code && name && price && stock) {
+            addProduct({ code, name, price, stock, barcode });
+            document.getElementById('newCode').value = '';
+            document.getElementById('newName').value = '';
+            document.getElementById('newPrice').value = '';
+            document.getElementById('newStock').value = '';
+            document.getElementById('newBarcode').value = '';
+        } else alert('Preencha todos os campos!');
+    };
+    window.addUser = () => {
+        const username = document.getElementById('newUserName')?.value;
+        const password = document.getElementById('newUserPass')?.value;
+        const role = document.getElementById('newUserRole')?.value;
+        if(username && password) {
+            stores[currentStore].users[username] = { password, role, name: username };
+            saveData();
+            alert(`Usuário ${username} criado!`);
+            renderApp();
+        } else alert('Preencha usuário e senha!');
+    };
+    window.createNewStore = () => {
+        const id = document.getElementById('newStoreId')?.value;
+        const name = document.getElementById('newStoreName')?.value;
+        const days = parseInt(document.getElementById('newStoreDays')?.value);
+        if(id && name && days && !stores[id]) {
+            stores[id] = {
+                id, name,
+                license: { active: true, startDate: new Date().toISOString(), daysLeft: days, lastPayment: new Date().toISOString() },
+                products: [],
+                users: { admin: { password: 'admin123', role: 'admin', name: 'Administrador' } },
+                sales: [],
+                pendingSales: []
+            };
+            saveData();
+            alert(`Loja "${name}" criada com licença de ${days} dias!`);
+            document.getElementById('newStoreId').value = '';
+            document.getElementById('newStoreName').value = '';
+            document.getElementById('newStoreDays').value = '';
+            renderApp();
+        } else alert('Preencha todos os campos ou loja já existe!');
+    };
+    window.activateStoreLicense = (storeId) => {
+        const days = parseInt(document.getElementById(`days_${storeId}`)?.value);
+        if(days && days > 0) {
+            activateStoreLicense(storeId, days);
+            alert(`Licença da loja ${stores[storeId].name} ativada por ${days} dias!`);
+            renderApp();
+        } else alert('Informe a quantidade de dias!');
+    };
+    window.addDaysToStore = (storeId) => {
+        const days = parseInt(document.getElementById(`days_${storeId}`)?.value);
+        if(days && days > 0) {
+            const store = stores[storeId];
+            if(store && store.license) {
+                store.license.daysLeft += days;
+                store.license.active = true;
+                saveData();
+                alert(`+${days} dias adicionados para ${store.name}!`);
+                renderApp();
+            }
+        } else alert('Informe a quantidade de dias!');
+    };
+    window.blockStoreLicense = (storeId) => {
+        if(confirm(`Bloquear ${stores[storeId].name}? O cliente não poderá acessar.`)) {
+            blockStoreLicense(storeId);
+            alert(`Loja ${stores[storeId].name} bloqueada!`);
+            renderApp();
+        }
+    };
+    window.setBackground = () => {
+        const url = document.getElementById('bgImageUrl')?.value;
+        if(url) {
+            document.getElementById('customBg').style.backgroundImage = `url(${url})`;
+            localStorage.setItem('sismega_bg', url);
+            alert('Fundo aplicado!');
+        }
+    };
+    window.resetBackground = () => {
+        document.getElementById('customBg').style.backgroundImage = '';
+        localStorage.removeItem('sismega_bg');
+        alert('Fundo removido!');
+    };
+    window.toggleTheme = () => {
+        const currentClass = document.body.className;
+        const newClass = currentClass === 'theme-dark' ? 'theme-light' : 'theme-dark';
+        document.body.className = newClass;
+        localStorage.setItem('sismega_theme', newClass);
+        renderApp();
+    };
+    window.changeScreen = (screen) => { currentScreen = screen; renderApp(); };
+    window.logout = () => { currentUser = null; cart = []; currentScreen = 'login'; renderApp(); };
+
+    function renderApp() {
+        const app = document.getElementById('app');
+        if (!app) return;
+        
+        const savedBg = localStorage.getItem('sismega_bg');
+        if (savedBg) document.getElementById('customBg').style.backgroundImage = `url(${savedBg})`;
+        
+        if (currentScreen === 'login') {
+            app.innerHTML = renderLogin();
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) {
+                loginBtn.onclick = () => {
+                    const storeId = document.getElementById('storeSelect').value;
+                    const username = document.getElementById('username').value;
+                    const password = document.getElementById('password').value;
+                    
+                    if (username === 'dev' && password === 'dev123') {
+                        currentUser = { username: 'dev', role: 'developer', name: 'Desenvolvedor' };
+                        currentScreen = 'dev';
+                        renderApp();
+                        return;
+                    }
+                    
+                    const store = stores[storeId];
+                    if (!checkStoreLicense(storeId)) {
+                        alert(`⚠️ A loja ${store.name} está com licença expirada! Contate o desenvolvedor.`);
+                        return;
+                    }
+                    
+                    const user = store?.users[username];
+                    if (user && user.password === password) {
+                        currentUser = { ...user, username: username };
+                        currentStore = storeId;
+                        cart = [];
+                        currentScreen = 'pdv';
+                        renderApp();
+                    } else {
+                        alert('Usuário ou senha inválidos!');
+                    }
+                };
+            }
+        } else if (currentScreen === 'dev') {
+            app.innerHTML = renderDevPanel();
+        } else if (currentScreen === 'pdv') {
+            if (!checkStoreLicense(currentStore)) {
+                alert(`⚠️ Licença da loja ${stores[currentStore].name} expirada!`);
+                logout();
+                return;
+            }
+            app.innerHTML = renderPOS();
+        } else if (currentScreen === 'history') {
+            app.innerHTML = renderSalesHistory();
+        } else if (currentScreen === 'admin' && currentUser?.role === 'admin') {
+            app.innerHTML = renderAdminPanel();
+        }
+    }
+    
+    renderApp();
+</script>
+</body>
+</html>
