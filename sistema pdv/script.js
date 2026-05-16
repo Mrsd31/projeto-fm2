@@ -7,7 +7,6 @@ let systemConfig = {
 };
 
 // ==================== DADOS DAS LOJAS ====================
-// LOJA PADRÃO INICIAL (PODE SER DELETADA PELO DEV)
 let stores = {
     exemplo: {
         id: 'exemplo',
@@ -115,11 +114,11 @@ function deleteStore(storeId) {
 }
 
 function saveData() {
-    localStorage.setItem('sismega_stores', JSON.stringify(stores));
+    localStorage.setItem('sisSantyu_stores', JSON.stringify(stores));
 }
 
 function loadData() {
-    const saved = localStorage.getItem('sismega_stores');
+    const saved = localStorage.getItem('sisSantyu_stores');
     if (saved) {
         stores = JSON.parse(saved);
     } else {
@@ -128,7 +127,7 @@ function loadData() {
 }
 
 function loadSystemConfig() {
-    const saved = localStorage.getItem('sismega_system_config');
+    const saved = localStorage.getItem('sisSantyu_system_config');
     if (saved) {
         systemConfig = JSON.parse(saved);
         if (systemConfig.loginBackground) {
@@ -141,7 +140,7 @@ function loadSystemConfig() {
 }
 
 function saveSystemConfig() {
-    localStorage.setItem('sismega_system_config', JSON.stringify(systemConfig));
+    localStorage.setItem('sisSantyu_system_config', JSON.stringify(systemConfig));
 }
 
 function formatMoney(value) {
@@ -153,7 +152,7 @@ function generateInvoice(sale, store, receivedValue = null) {
     const date = new Date(sale.date);
     let invoice = `
 ╔══════════════════════════════════════════════════════════════════════╗
-║                         SISMEGA PDV SYSTEM                          ║
+║                      SISSANTYU-SJ - PDV SYSTEM                      ║
 ║                      NOTA FISCAL DE VENDA                           ║
 ╠══════════════════════════════════════════════════════════════════════╣
 ║ ${store.name.padEnd(62)} ║
@@ -192,13 +191,13 @@ function generateInvoice(sale, store, receivedValue = null) {
 
 function printInvoice(invoice) {
     if (systemConfig.printerType === 'email' && systemConfig.emailTo) {
-        const mailtoLink = `mailto:${systemConfig.emailTo}?subject=Nota Fiscal SISMEGA&body=${encodeURIComponent(invoice)}`;
+        const mailtoLink = `mailto:${systemConfig.emailTo}?subject=Nota Fiscal SisSantyu-SJ&body=${encodeURIComponent(invoice)}`;
         window.location.href = mailtoLink;
         alert(`📧 Nota fiscal enviada para ${systemConfig.emailTo}`);
     } else {
         const printWindow = window.open('', '_blank', 'width=500,height=700');
         printWindow.document.write(`
-            <html><head><title>Nota Fiscal</title>
+            <html><head><title>Nota Fiscal - SisSantyu-SJ</title>
             <style>body{font-family:'Courier New',monospace;padding:20px;} pre{font-size:11px;}</style>
             </head><body><pre>${invoice}</pre>
             <button onclick="window.print();window.close();">🖨️ Imprimir</button>
@@ -207,8 +206,10 @@ function printInvoice(invoice) {
     }
 }
 
+// FUNÇÃO DE IMPRESSÃO MODIFICADA - AGORA SÓ PERGUNTA SIM OU NÃO
 function askToPrint(invoice) {
-    return confirm('🖨️ Deseja imprimir/enviar a nota fiscal?');
+    const resposta = confirm('🖨️ Deseja imprimir/enviar a nota fiscal?\n\n✅ Clique em "Sim" para SIM\n❌ Clique em "Não" para NÃO');
+    return resposta === true;
 }
 
 // ==================== PAGAMENTO ====================
@@ -419,7 +420,7 @@ function printSalesReport() {
     const totalGeral = sales.reduce((s, v) => s + v.total, 0);
     const report = `
 ╔══════════════════════════════════════════════════════════════════════╗
-║                     SISMEGA PDV - RELATÓRIO GERENCIAL                ║
+║                   SISSANTYU-SJ - RELATÓRIO GERENCIAL                 ║
 ╠══════════════════════════════════════════════════════════════════════╣
 ║ ${stores[currentStore].name.padEnd(62)} ║
 ║ Data: ${new Date().toLocaleDateString('pt-BR').padEnd(56)} ║
@@ -429,7 +430,7 @@ function printSalesReport() {
     
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     printWindow.document.write(`
-        <html><head><title>Relatório</title>
+        <html><head><title>Relatório - SisSantyu-SJ</title>
         <style>body{font-family:monospace;padding:20px;}</style>
         </head><body><pre>${report}</pre>
         <button onclick="window.print();window.close();">🖨️ Imprimir</button>
@@ -530,14 +531,14 @@ function renderLogin() {
         <div style="display:flex;justify-content:center;align-items:center;height:100vh;">
             <div class="glass-card" style="width:420px;text-align:center;">
                 <div class="logo-area">
-                    <h1>🏪 SISMEGA PDV</h1>
-                    <p>Sistema Profissional de Automação Comercial</p>
+                    <h1>SisSantyu-SJ</h1>
+                    <p>Sistema Profissional de Gestão</p>
                 </div>
                 <input type="text" id="username" placeholder="👤 Usuário" style="width:100%; margin:0.8rem 0; padding:12px;">
                 <input type="password" id="password" placeholder="🔒 Senha" style="width:100%; margin:0.8rem 0; padding:12px;">
                 <button id="loginBtn" style="width:100%; padding:12px; font-size:1rem;">🔓 Entrar</button>
                 <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border-color);">
-                    <p style="font-size:0.75rem; color:var(--text-muted);">👨‍💻 Desenvolvedor: dev / dev123</p>
+                    <p style="font-size:0.75rem; color:var(--text-muted);">👨‍💻 </p>
                 </div>
                 <button onclick="window.toggleTheme()" style="margin-top:15px; width:100%;">🎨 Tema</button>
             </div>
@@ -549,7 +550,7 @@ function renderDevPanel() {
     return `
         <div class="app-wrapper">
             <div class="sidebar">
-                <div class="logo-area"><h1>🔧 DEV PANEL</h1><p>Controle Total</p></div>
+                <div class="logo-area"><h1>🔧 DEV PANEL</h1><p>SisSantyu-SJ</p></div>
                 <button class="nav-btn active" onclick="window.changeScreen('dev')">📊 Dashboard</button>
                 <button class="nav-btn" onclick="window.logout()">🚪 Sair</button>
             </div>
@@ -623,7 +624,7 @@ function renderDevPanel() {
                         <button onclick="window.createNewStore()" style="grid-column:span 5;">➕ Criar Nova Loja</button>
                     </div>
                     <div style="margin-top:1rem; padding:1rem; background:var(--hover-glow); border-radius:1rem;">
-                        <p style="font-size:0.8rem;">💡 <strong>Instruções:</strong> Preencha todos os campos para criar uma nova loja. O usuário Admin será criado automaticamente com a senha definida. A loja já virá com 30 dias de licença padrão.</p>
+                        <p style="font-size:0.8rem;">💡 <strong>Instruções:</strong> Preencha todos os campos para criar uma nova loja. O usuário Admin será criado automaticamente com a senha definida.</p>
                     </div>
                 </div>
             </div>
@@ -640,7 +641,7 @@ function renderAdminPanel() {
     return `
         <div class="app-wrapper">
             <div class="sidebar">
-                <div class="logo-area"><h1>SISMEGA PRO</h1></div>
+                <div class="logo-area"><h1>SisSantyu-SJ</h1></div>
                 <div class="store-info" style="margin-bottom:1rem;">
                     <div style="font-weight:bold;">${store.name}</div>
                     <div>👑 ${currentUser.name}</div>
@@ -768,7 +769,7 @@ function renderPOS() {
         <div class="app-wrapper">
             <div class="sidebar">
                 <div class="logo-area">
-                    <h1>SISMEGA PRO</h1>
+                    <h1>SisSantyu-SJ</h1>
                     <button onclick="window.toggleTheme()" style="margin-top:10px; padding:5px 15px;">🎨 Tema</button>
                 </div>
                 <div class="store-info">
@@ -838,7 +839,7 @@ function renderSalesHistory() {
     return `
         <div class="app-wrapper">
             <div class="sidebar">
-                <div class="logo-area"><h1>SISMEGA PRO</h1></div>
+                <div class="logo-area"><h1>SisSantyu-SJ</h1></div>
                 <div class="store-info"><div>${stores[currentStore].name}</div><div>👤 ${currentUser.name}</div></div>
                 <div class="nav-menu">
                     <button class="nav-btn" onclick="window.changeScreen('pdv')">💰 Caixa</button>
@@ -1067,15 +1068,13 @@ function renderApp() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
-            // Login do desenvolvedor
-            if (username === 'dev' && password === 'dev123') {
+            if (username === 'dev' && password === 'sj0001') {
                 currentUser = { username: 'dev', role: 'developer', name: 'Desenvolvedor' };
                 currentScreen = 'dev';
                 renderApp();
                 return;
             }
             
-            // Procurar em todas as lojas
             for (let storeId in stores) {
                 const user = stores[storeId]?.users[username];
                 if (user && user.password === password) {
@@ -1138,7 +1137,6 @@ function renderApp() {
     }
 }
 
-// Inicializar
 loadData();
 loadSystemConfig();
 renderApp();
