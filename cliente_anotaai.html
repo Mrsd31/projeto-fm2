@@ -1,4 +1,4 @@
-/<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -6,6 +6,7 @@
     <title>Santyus-SJ | Cardápio do Cliente</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -37,7 +38,6 @@
             padding: 0 20px;
         }
 
-        /* Header */
         .navbar {
             background: #000000dd;
             backdrop-filter: blur(12px);
@@ -77,6 +77,9 @@
             align-items: center;
             gap: 8px;
         }
+        .whatsapp-btn-header:hover {
+            transform: scale(1.02);
+        }
 
         .btn-primary {
             background: #2ecc71;
@@ -95,14 +98,18 @@
             background: #27ae60;
             transform: scale(1.02);
         }
-        .btn-outline {
-            background: transparent;
-            border: 1.5px solid #2ecc71;
-            color: #2ecc71;
-            padding: 10px 24px;
+        .btn-secondary {
+            background: #ff9800;
+            color: #000;
+            padding: 12px 28px;
             border-radius: 40px;
-            font-weight: 600;
+            font-weight: 700;
+            border: none;
             cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .hero {
@@ -137,7 +144,7 @@
 
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 24px;
             margin-top: 20px;
         }
@@ -146,20 +153,18 @@
             border-radius: 20px;
             overflow: hidden;
             border: 1px solid #2ecc7122;
-            transition: 0.2s;
+            transition: 0.3s;
         }
         .product-card:hover {
             border-color: #2ecc71;
-            transform: translateY(-4px);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(46,204,113,0.2);
         }
         .product-img {
-            height: 140px;
-            background: linear-gradient(145deg, #1a1f1a, #0a0f0a);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: #2ecc71;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
         }
         .product-info {
             padding: 16px;
@@ -169,21 +174,24 @@
             font-weight: 700;
             display: flex;
             justify-content: space-between;
+            margin-bottom: 8px;
         }
         .price {
             color: #2ecc71;
             font-weight: 800;
+            font-size: 1.1rem;
         }
         .product-desc {
             font-size: 0.8rem;
             color: #aaa;
             margin: 8px 0;
+            line-height: 1.4;
         }
         .add-btn {
             background: transparent;
             border: 1px solid #2ecc71;
             color: #2ecc71;
-            padding: 8px;
+            padding: 10px;
             border-radius: 30px;
             font-weight: 600;
             cursor: pointer;
@@ -193,6 +201,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: 0.2s;
         }
         .add-btn:hover {
             background: #2ecc71;
@@ -223,6 +232,98 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            transition: 0.2s;
+        }
+        .cart-sidebar:hover {
+            transform: scale(1.05);
+        }
+
+        /* Modal do Carrinho/Checkout */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #111;
+            border: 2px solid #2ecc71;
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .close-modal:hover {
+            color: #2ecc71;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #2ecc7133;
+        }
+        .cart-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 15px 0;
+            text-align: right;
+            color: #2ecc71;
+        }
+        .checkout-form input, .checkout-form select, .checkout-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #1a1a1a;
+            border: 1px solid #2ecc71;
+            border-radius: 12px;
+            color: white;
+        }
+        .payment-options {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .payment-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 1px solid #2ecc7133;
+        }
+        .payment-option.selected {
+            border-color: #2ecc71;
+            background: #2ecc7122;
+        }
+        .btn-checkout {
+            width: 100%;
+            padding: 14px;
+            background: #2ecc71;
+            color: #000;
+            border: none;
+            border-radius: 40px;
+            font-weight: bold;
+            margin-top: 15px;
+            cursor: pointer;
         }
 
         footer {
@@ -232,6 +333,34 @@
             margin-top: 50px;
         }
 
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: #2ecc71;
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .sync-status {
+            background: #1a1a1a;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            color: #2ecc71;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         @media (max-width: 768px) {
             .nav-content {
                 flex-direction: column;
@@ -239,6 +368,9 @@
             }
             .hero h2 {
                 font-size: 1.8rem;
+            }
+            .product-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -251,9 +383,12 @@
             <h1>SANTYUS-SJ</h1>
             <span>✦ SABOR & TECNOLOGIA ✦</span>
         </div>
-        <a href="https://wa.me/5521959416937" class="whatsapp-btn-header" target="_blank">
-            <i class="fab fa-whatsapp"></i> Fale Conosco
-        </a>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <div class="sync-status"><i class="fas fa-sync-alt"></i> Cardápio Online</div>
+            <a href="https://wa.me/5521959416937" class="whatsapp-btn-header" target="_blank">
+                <i class="fab fa-whatsapp"></i> Suporte
+            </a>
+        </div>
     </div>
 </nav>
 
@@ -262,23 +397,9 @@
         <div class="hero">
             <h2>🍔 Bem-vindo ao <span class="highlight">Santyus-SJ</span></h2>
             <p>Peça seu lanche favorito e receba na sua casa</p>
-            <button class="btn-primary" id="fazerPedidoBtn"><i class="fab fa-whatsapp"></i> FAZER PEDIDO GERAL</button>
         </div>
 
-        <h2 class="section-title">🍔 Hambúrgueres</h2>
-        <div class="product-grid" id="gridHamburgueres"></div>
-
-        <h2 class="section-title">🍟 Porções</h2>
-        <div class="product-grid" id="gridPorcoes"></div>
-
-        <h2 class="section-title">🍕 Pizzas</h2>
-        <div class="product-grid" id="gridPizzas"></div>
-
-        <h2 class="section-title">🥤 Bebidas</h2>
-        <div class="product-grid" id="gridBebidas"></div>
-
-        <h2 class="section-title">🍰 Sobremesas</h2>
-        <div class="product-grid" id="gridSobremesas"></div>
+        <div id="produtosContainer"></div>
 
         <div class="promo-banner">
             <h3>⚡ Pague com <span style="color:#2ecc71">PIX</span> e ganhe 5% de desconto</h3>
@@ -295,6 +416,45 @@
     <span id="carrinhoCount">0</span>
 </div>
 
+<!-- Modal do Carrinho / Checkout -->
+<div id="checkoutModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" id="closeCheckout">&times;</span>
+        <h2 style="margin-bottom: 20px;"><i class="fas fa-shopping-cart"></i> Meu Carrinho</h2>
+        <div id="cartItemsList"></div>
+        <div id="cartTotal" class="cart-total"></div>
+        
+        <div class="checkout-form">
+            <h3>Dados para entrega</h3>
+            <input type="text" id="clienteNome" placeholder="Seu nome completo">
+            <input type="text" id="clienteEndereco" placeholder="Endereço completo">
+            <input type="text" id="clienteTelefone" placeholder="Telefone (WhatsApp)">
+            <textarea id="clienteObservacoes" rows="2" placeholder="Observações (opcional)"></textarea>
+            
+            <h3>Forma de pagamento</h3>
+            <div class="payment-options">
+                <div class="payment-option" data-pagamento="pix">💰 PIX (5% OFF)</div>
+                <div class="payment-option" data-pagamento="dinheiro">💵 Dinheiro</div>
+                <div class="payment-option" data-pagamento="cartao">💳 Cartão (débito/crédito)</div>
+            </div>
+            
+            <button class="btn-checkout" id="finalizarPedidoBtn"><i class="fas fa-check-circle"></i> CONFIRMAR PEDIDO</button>
+        </div>
+    </div>
+</div>
+
+<div id="pixModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" id="closePixModal">&times;</span>
+        <i class="fab fa-pix" style="font-size: 3rem; color:#2ecc71;"></i>
+        <h3 style="margin: 15px 0;">Pague com PIX</h3>
+        <p>Chave: <strong>santyusj001@gmail.com</strong></p>
+        <div id="qrcode"></div>
+        <button class="copy-pix" id="copyPixBtn">📋 Copiar chave PIX</button>
+        <p style="font-size: 0.8rem; margin-top: 15px;">✅ Ganhe 5% de desconto no seu pedido!</p>
+    </div>
+</div>
+
 <footer>
     <p>© 2025 Santyus-SJ – Sabor, inovação e tecnologia preto & verde</p>
     <p>📞 Delivery: <a href="https://wa.me/5521959416937" style="color:#2ecc71">(21) 95941-6937</a></p>
@@ -302,109 +462,147 @@
 
 <script>
     const WHATSAPP_NUMBER = "5521959416937";
+    const PIX_KEY = "santyusj001@gmail.com";
+    let carrinho = [];
+    let pagamentoSelecionado = "pix";
 
-    // Lista de produtos
-    const produtos = {
+    // ==================== DADOS INICIAIS ====================
+    const produtosIniciais = {
         hamburgueres: [
-            { nome: "Smash Duplo", preco: 32.90, desc: "Dois hambúrgueres, cheddar, bacon e molho verde", icone: "fa-cheese" },
-            { nome: "Chicken Burger", preco: 28.90, desc: "Frango empanado, alface, tomate e maionese de ervas", icone: "fa-pepper-hot" },
-            { nome: "Burger Clássico", preco: 24.90, desc: "Hambúrguer 150g, queijo, alface e tomate", icone: "fa-hamburger" },
-            { nome: "BBQ Bacon", preco: 34.90, desc: "Hambúrguer 180g, cheddar, bacon e molho barbecue", icone: "fa-bacon" },
-            { nome: "Veggie Burger", preco: 26.90, desc: "Hambúrguer de grão-de-bico, queijo vegano", icone: "fa-seedling" },
-            { nome: "Monster Burger", preco: 45.90, desc: "Três hambúrgueres, queijos, bacon e ovo", icone: "fa-dragon" }
+            { id: 1, nome: "Smash Duplo", preco: 32.90, desc: "Dois hambúrgueres smash, cheddar cremoso, bacon crocante.", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=200&fit=crop", categoria: "Hambúrguer", estoque: 20 },
+            { id: 2, nome: "Chicken Burger", preco: 28.90, desc: "Frango empanado crocante, alface, tomate e maionese de ervas.", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&h=200&fit=crop", categoria: "Hambúrguer", estoque: 15 },
+            { id: 3, nome: "Burger Clássico", preco: 24.90, desc: "Hambúrguer 150g, queijo prato, alface e tomate.", img: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=200&fit=crop", categoria: "Hambúrguer", estoque: 25 },
+            { id: 4, nome: "BBQ Bacon", preco: 34.90, desc: "Hambúrguer 180g, cheddar, bacon e molho barbecue.", img: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=400&h=200&fit=crop", categoria: "Hambúrguer", estoque: 18 },
+            { id: 5, nome: "Veggie Burger", preco: 26.90, desc: "Hambúrguer de grão-de-bico, queijo vegano.", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=200&fit=crop", categoria: "Hambúrguer", estoque: 10 },
+            { id: 6, nome: "Monster Burger", preco: 45.90, desc: "Três hambúrgueres, queijos, bacon e ovo.", img: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=400&h=200&fit=crop", categoria: "Hambúrguer", estoque: 12 }
         ],
         porcoes: [
-            { nome: "Batata Suprema", preco: 22.90, desc: "Batata com cheddar, bacon e catupiry", icone: "fa-fries" },
-            { nome: "Batata Frita", preco: 15.90, desc: "Batata sequinha e crocante", icone: "fa-fries" },
-            { nome: "Onion Rings", preco: 18.90, desc: "Anéis de cebola empanados", icone: "fa-ring" },
-            { nome: "Frango Crocante", preco: 24.90, desc: "Tiras de frango empanadas", icone: "fa-drumstick-bite" }
+            { id: 7, nome: "Batata Suprema", preco: 22.90, desc: "Batata com cheddar, bacon e catupiry.", img: "https://images.unsplash.com/photo-1630384060421-cf20c0e0643f?w=400&h=200&fit=crop", categoria: "Porção", estoque: 30 },
+            { id: 8, nome: "Batata Frita", preco: 15.90, desc: "Batata sequinha e crocante.", img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&h=200&fit=crop", categoria: "Porção", estoque: 40 },
+            { id: 9, nome: "Onion Rings", preco: 18.90, desc: "Anéis de cebola empanados.", img: "https://images.unsplash.com/photo-1639024471283-035188dd12ef?w=400&h=200&fit=crop", categoria: "Porção", estoque: 25 },
+            { id: 10, nome: "Mandioca Frita", preco: 16.90, desc: "Mandioca macia e crocante.", img: "https://images.unsplash.com/photo-1585109649139-366815a0d713?w=400&h=200&fit=crop", categoria: "Porção", estoque: 20 },
+            { id: 11, nome: "Frango Crocante", preco: 24.90, desc: "Tiras de frango empanadas.", img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=200&fit=crop", categoria: "Porção", estoque: 20 },
+            { id: 12, nome: "Calabresa Acebolada", preco: 28.90, desc: "Linguiça calabresa grelhada.", img: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=400&h=200&fit=crop", categoria: "Porção", estoque: 15 }
         ],
         pizzas: [
-            { nome: "Pizza Mussarela", preco: 39.90, desc: "Molho, mussarela e orégano", icone: "fa-pizza-slice" },
-            { nome: "Pizza Calabresa", preco: 42.90, desc: "Calabresa, cebola e mussarela", icone: "fa-pizza-slice" },
-            { nome: "Pizza Frango com Catupiry", preco: 44.90, desc: "Frango desfiado e catupiry", icone: "fa-pizza-slice" },
-            { nome: "Pizza 4 Queijos", preco: 49.90, desc: "Mussarela, provolone, parmesão e catupiry", icone: "fa-pizza-slice" }
+            { id: 13, nome: "Pizza Mussarela", preco: 39.90, desc: "Molho, mussarela e orégano.", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=200&fit=crop", categoria: "Pizza", estoque: 8 },
+            { id: 14, nome: "Pizza Calabresa", preco: 42.90, desc: "Calabresa, cebola e mussarela.", img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&h=200&fit=crop", categoria: "Pizza", estoque: 8 },
+            { id: 15, nome: "Pizza Frango c/ Catupiry", preco: 44.90, desc: "Frango desfiado e catupiry.", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=200&fit=crop", categoria: "Pizza", estoque: 8 },
+            { id: 16, nome: "Pizza Portuguesa", preco: 46.90, desc: "Presunto, ovos, cebola e azeitonas.", img: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&h=200&fit=crop", categoria: "Pizza", estoque: 8 },
+            { id: 17, nome: "Pizza Pepperoni", preco: 48.90, desc: "Pepperoni em fatias e mussarela.", img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&h=200&fit=crop", categoria: "Pizza", estoque: 8 },
+            { id: 18, nome: "Pizza 4 Queijos", preco: 49.90, desc: "Quatro queijos e orégano.", img: "https://images.unsplash.com/photo-1528137871618-79d2761e3fd5?w=400&h=200&fit=crop", categoria: "Pizza", estoque: 8 }
         ],
         bebidas: [
-            { nome: "Coca-Cola 350ml", preco: 6.90, desc: "Lata gelada", icone: "fa-wine-bottle" },
-            { nome: "Guaraná 350ml", preco: 6.50, desc: "Lata gelada", icone: "fa-wine-bottle" },
-            { nome: "Suco Natural", preco: 8.90, desc: "Laranja, limão ou maracujá (500ml)", icone: "fa-tint" },
-            { nome: "Água Mineral", preco: 4.50, desc: "Com ou sem gás", icone: "fa-tint" }
+            { id: 19, nome: "Coca-Cola 350ml", preco: 6.90, desc: "Lata gelada.", img: "https://images.unsplash.com/photo-1581006500359-6ae14e1d8efc?w=400&h=200&fit=crop", categoria: "Bebida", estoque: 50 },
+            { id: 20, nome: "Guaraná Antarctica", preco: 6.50, desc: "Lata gelada.", img: "https://images.unsplash.com/photo-1599720052117-b3b68c5b8730?w=400&h=200&fit=crop", categoria: "Bebida", estoque: 45 },
+            { id: 21, nome: "Suco Natural", preco: 8.90, desc: "Laranja, limão ou maracujá.", img: "https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=400&h=200&fit=crop", categoria: "Bebida", estoque: 30 },
+            { id: 22, nome: "Água Mineral", preco: 4.50, desc: "Com ou sem gás.", img: "https://images.unsplash.com/photo-1616118132534-3812f0056e0e?w=400&h=200&fit=crop", categoria: "Bebida", estoque: 60 },
+            { id: 23, nome: "Cerveja Artesanal", preco: 12.90, desc: "Long neck IPA ou Pilsen.", img: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=400&h=200&fit=crop", categoria: "Bebida", estoque: 25 }
         ],
         sobremesas: [
-            { nome: "Milkshake", preco: 18.90, desc: "Morango, chocolate ou ovomaltine", icone: "fa-ice-cream" },
-            { nome: "Petit Gateau", preco: 16.90, desc: "Bolo de chocolate com sorvete", icone: "fa-cake" },
-            { nome: "Brownie com Sorvete", preco: 14.90, desc: "Brownie de chocolate com sorvete", icone: "fa-cookie-bite" }
+            { id: 24, nome: "Milkshake", preco: 18.90, desc: "Morango, chocolate ou ovomaltine.", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&h=200&fit=crop", categoria: "Sobremesa", estoque: 15 },
+            { id: 25, nome: "Petit Gateau", preco: 16.90, desc: "Bolo de chocolate com sorvete.", img: "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=400&h=200&fit=crop", categoria: "Sobremesa", estoque: 12 },
+            { id: 26, nome: "Brownie com Sorvete", preco: 14.90, desc: "Brownie de chocolate com sorvete.", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&h=200&fit=crop", categoria: "Sobremesa", estoque: 18 },
+            { id: 27, nome: "Pudim de Leite", preco: 9.90, desc: "Pudim caseiro com calda.", img: "https://images.unsplash.com/photo-1587314168485-3236d6710814?w=400&h=200&fit=crop", categoria: "Sobremesa", estoque: 20 }
         ]
     };
 
-    let carrinho = [];
+    function carregarProdutosDoSistema() {
+        let produtosSistema = localStorage.getItem('santyus_produtos');
+        if (!produtosSistema) {
+            const todosProdutos = [
+                ...produtosIniciais.hamburgueres,
+                ...produtosIniciais.porcoes,
+                ...produtosIniciais.pizzas,
+                ...produtosIniciais.bebidas,
+                ...produtosIniciais.sobremesas
+            ];
+            localStorage.setItem('santyus_produtos', JSON.stringify(todosProdutos));
+            return todosProdutos;
+        }
+        return JSON.parse(produtosSistema);
+    }
+
+    function carregarPedidosDoSistema() {
+        let pedidosSistema = localStorage.getItem('santyus_pedidos');
+        if (!pedidosSistema) {
+            localStorage.setItem('santyus_pedidos', JSON.stringify([]));
+            return [];
+        }
+        return JSON.parse(pedidosSistema);
+    }
+
+    function salvarPedidoNoSistema(pedido) {
+        let pedidos = carregarPedidosDoSistema();
+        pedidos.unshift(pedido);
+        localStorage.setItem('santyus_pedidos', JSON.stringify(pedidos));
+    }
+
+    function atualizarEstoqueProduto(nomeProduto, quantidade) {
+        let produtos = carregarProdutosDoSistema();
+        const produto = produtos.find(p => p.nome === nomeProduto);
+        if (produto) {
+            produto.estoque -= quantidade;
+            if (produto.estoque < 0) produto.estoque = 0;
+            localStorage.setItem('santyus_produtos', JSON.stringify(produtos));
+        }
+    }
 
     function renderizarProdutos() {
-        // Hambúrgueres
-        document.getElementById('gridHamburgueres').innerHTML = produtos.hamburgueres.map(p => `
-            <div class="product-card">
-                <div class="product-img"><i class="fas ${p.icone}"></i></div>
-                <div class="product-info">
-                    <div class="product-title"><span>${p.nome}</span><span class="price">R$ ${p.preco.toFixed(2)}</span></div>
-                    <div class="product-desc">${p.desc}</div>
-                    <button class="add-btn" onclick="adicionarAoCarrinho('${p.nome}', ${p.preco})"><i class="fas fa-cart-plus"></i> Adicionar</button>
-                </div>
-            </div>
-        `).join('');
-
-        // Porções
-        document.getElementById('gridPorcoes').innerHTML = produtos.porcoes.map(p => `
-            <div class="product-card">
-                <div class="product-img"><i class="fas ${p.icone}"></i></div>
-                <div class="product-info">
-                    <div class="product-title"><span>${p.nome}</span><span class="price">R$ ${p.preco.toFixed(2)}</span></div>
-                    <div class="product-desc">${p.desc}</div>
-                    <button class="add-btn" onclick="adicionarAoCarrinho('${p.nome}', ${p.preco})"><i class="fas fa-cart-plus"></i> Adicionar</button>
-                </div>
-            </div>
-        `).join('');
-
-        // Pizzas
-        document.getElementById('gridPizzas').innerHTML = produtos.pizzas.map(p => `
-            <div class="product-card">
-                <div class="product-img"><i class="fas ${p.icone}"></i></div>
-                <div class="product-info">
-                    <div class="product-title"><span>${p.nome}</span><span class="price">R$ ${p.preco.toFixed(2)}</span></div>
-                    <div class="product-desc">${p.desc}</div>
-                    <button class="add-btn" onclick="adicionarAoCarrinho('${p.nome}', ${p.preco})"><i class="fas fa-cart-plus"></i> Adicionar</button>
-                </div>
-            </div>
-        `).join('');
-
-        // Bebidas
-        document.getElementById('gridBebidas').innerHTML = produtos.bebidas.map(p => `
-            <div class="product-card">
-                <div class="product-img"><i class="fas ${p.icone}"></i></div>
-                <div class="product-info">
-                    <div class="product-title"><span>${p.nome}</span><span class="price">R$ ${p.preco.toFixed(2)}</span></div>
-                    <div class="product-desc">${p.desc}</div>
-                    <button class="add-btn" onclick="adicionarAoCarrinho('${p.nome}', ${p.preco})"><i class="fas fa-cart-plus"></i> Adicionar</button>
-                </div>
-            </div>
-        `).join('');
-
-        // Sobremesas
-        document.getElementById('gridSobremesas').innerHTML = produtos.sobremesas.map(p => `
-            <div class="product-card">
-                <div class="product-img"><i class="fas ${p.icone}"></i></div>
-                <div class="product-info">
-                    <div class="product-title"><span>${p.nome}</span><span class="price">R$ ${p.preco.toFixed(2)}</span></div>
-                    <div class="product-desc">${p.desc}</div>
-                    <button class="add-btn" onclick="adicionarAoCarrinho('${p.nome}', ${p.preco})"><i class="fas fa-cart-plus"></i> Adicionar</button>
-                </div>
-            </div>
-        `).join('');
+        const produtos = carregarProdutosDoSistema();
+        const categorias = [...new Set(produtos.map(p => p.categoria))];
+        const container = document.getElementById('produtosContainer');
+        
+        let html = '';
+        categorias.forEach(categoria => {
+            const produtosCategoria = produtos.filter(p => p.categoria === categoria);
+            let icone = '';
+            if (categoria === 'Hambúrguer') icone = '🍔';
+            else if (categoria === 'Porção') icone = '🍟';
+            else if (categoria === 'Pizza') icone = '🍕';
+            else if (categoria === 'Bebida') icone = '🥤';
+            else if (categoria === 'Sobremesa') icone = '🍰';
+            
+            html += `<h2 class="section-title">${icone} ${categoria}s</h2>`;
+            html += `<div class="product-grid">`;
+            
+            produtosCategoria.forEach(p => {
+                const disponivel = p.estoque > 0;
+                html += `
+                    <div class="product-card" data-id="${p.id}" data-nome="${p.nome}" data-preco="${p.preco}" data-estoque="${p.estoque}">
+                        <div class="product-img" style="background-image: url('${p.img}'); background-size: cover; background-position: center;"></div>
+                        <div class="product-info">
+                            <div class="product-title"><span>${p.nome}</span><span class="price">R$ ${p.preco.toFixed(2)}</span></div>
+                            <div class="product-desc">${p.desc}</div>
+                            ${disponivel ? 
+                                `<button class="add-btn" onclick="adicionarAoCarrinho('${p.nome}', ${p.preco})"><i class="fas fa-cart-plus"></i> Adicionar ao carrinho</button>` :
+                                `<button class="add-btn" style="opacity:0.5; cursor:not-allowed;" disabled><i class="fas fa-times-circle"></i> Indisponível</button>`
+                            }
+                            <small style="display:block; margin-top:5px; color:#666;">Estoque: ${p.estoque} unidades</small>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+        });
+        container.innerHTML = html;
     }
 
     function adicionarAoCarrinho(nome, preco) {
+        const produtos = carregarProdutosDoSistema();
+        const produto = produtos.find(p => p.nome === nome);
+        
+        if (!produto || produto.estoque <= 0) {
+            mostrarToast(`❌ ${nome} está indisponível no momento!`);
+            return;
+        }
+        
         const itemExistente = carrinho.find(item => item.nome === nome);
         if (itemExistente) {
+            if (itemExistente.qtd + 1 > produto.estoque) {
+                mostrarToast(`⚠️ Estoque insuficiente de ${nome}! Disponível: ${produto.estoque}`);
+                return;
+            }
             itemExistente.qtd++;
         } else {
             carrinho.push({ nome, preco, qtd: 1 });
@@ -420,40 +618,159 @@
 
     function mostrarToast(msg) {
         let toast = document.createElement('div');
-        toast.style.cssText = 'position:fixed; bottom:80px; right:20px; background:#2ecc71; color:#000; padding:12px 24px; border-radius:40px; font-weight:600; z-index:1000; animation: slideIn 0.3s ease';
+        toast.className = 'toast';
         toast.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2500);
     }
 
-    function abrirCarrinhoWhatsApp() {
+    function abrirCheckout() {
         if (carrinho.length === 0) {
-            alert("Seu carrinho está vazio! Adicione alguns itens primeiro.");
+            mostrarToast("🛒 Seu carrinho está vazio!");
             return;
         }
-        let mensagem = "🍔 *PEDIDO SANTYUS-SJ* 🍔\n\n";
-        let total = 0;
-        carrinho.forEach(item => {
-            mensagem += `• ${item.nome} - ${item.qtd}x = R$ ${(item.preco * item.qtd).toFixed(2)}\n`;
-            total += item.preco * item.qtd;
-        });
-        mensagem += `\n📦 *TOTAL: R$ ${total.toFixed(2)}*\n`;
-        mensagem += `\n📍 Endereço: \n💳 Forma de pagamento: \n📝 Observações: `;
-        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensagem)}`, '_blank');
+        
+        const modal = document.getElementById('checkoutModal');
+        const cartItemsList = document.getElementById('cartItemsList');
+        const cartTotal = document.getElementById('cartTotal');
+        
+        cartItemsList.innerHTML = carrinho.map(item => `
+            <div class="cart-item">
+                <span>${item.nome} x${item.qtd}</span>
+                <span>R$ ${(item.preco * item.qtd).toFixed(2)}</span>
+            </div>
+        `).join('');
+        
+        let total = carrinho.reduce((sum, item) => sum + (item.preco * item.qtd), 0);
+        if (pagamentoSelecionado === 'pix') {
+            const desconto = total * 0.05;
+            cartTotal.innerHTML = `<strong>Subtotal: R$ ${total.toFixed(2)}</strong><br>
+                                   <span style="color:#2ecc71;">Desconto PIX (5%): -R$ ${desconto.toFixed(2)}</span><br>
+                                   <strong style="font-size:1.3rem;">Total: R$ ${(total - desconto).toFixed(2)}</strong>`;
+        } else {
+            cartTotal.innerHTML = `<strong style="font-size:1.3rem;">Total: R$ ${total.toFixed(2)}</strong>`;
+        }
+        
+        modal.style.display = 'flex';
     }
 
-    document.getElementById('fazerPedidoBtn').addEventListener('click', abrirCarrinhoWhatsApp);
-    document.getElementById('carrinhoBtn').addEventListener('click', abrirCarrinhoWhatsApp);
-    document.getElementById('pixBtn').addEventListener('click', () => {
-        alert("💰 Chave PIX: santyus-sj@email.com\nCopie e pague com 5% de desconto!");
+    function finalizarPedido() {
+        const nome = document.getElementById('clienteNome').value.trim();
+        const endereco = document.getElementById('clienteEndereco').value.trim();
+        const telefone = document.getElementById('clienteTelefone').value.trim();
+        const observacoes = document.getElementById('clienteObservacoes').value;
+        
+        if (!nome || !endereco || !telefone) {
+            mostrarToast("❌ Preencha todos os campos obrigatórios!");
+            return;
+        }
+        
+        let total = carrinho.reduce((sum, item) => sum + (item.preco * item.qtd), 0);
+        let desconto = 0;
+        if (pagamentoSelecionado === 'pix') {
+            desconto = total * 0.05;
+            total = total - desconto;
+        }
+        
+        const novoPedido = {
+            id: Date.now(),
+            cliente: nome,
+            endereco: endereco,
+            telefone: telefone,
+            observacoes: observacoes,
+            pagamento: pagamentoSelecionado.toUpperCase(),
+            itens: carrinho.map(item => ({ nome: item.nome, qtd: item.qtd, preco: item.preco })),
+            total: total,
+            status: "pendente",
+            data: new Date().toLocaleDateString(),
+            hora: new Date().toLocaleTimeString().slice(0,5)
+        };
+        
+        // Atualizar estoque
+        carrinho.forEach(item => {
+            atualizarEstoqueProduto(item.nome, item.qtd);
+        });
+        
+        // Salvar pedido
+        salvarPedidoNoSistema(novoPedido);
+        
+        // Limpar carrinho
+        carrinho = [];
+        atualizarCarrinhoUI();
+        
+        // Fechar modal
+        document.getElementById('checkoutModal').style.display = 'none';
+        
+        // Recarregar produtos
+        renderizarProdutos();
+        
+        mostrarToast(`✅ Pedido #${novoPedido.id} confirmado! O restaurante já recebeu seu pedido.`);
+        
+        // Limpar formulário
+        document.getElementById('clienteNome').value = '';
+        document.getElementById('clienteEndereco').value = '';
+        document.getElementById('clienteTelefone').value = '';
+        document.getElementById('clienteObservacoes').value = '';
+    }
+
+    // PIX
+    const pixModal = document.getElementById('pixModal');
+    const pixBtn = document.getElementById('pixBtn');
+    const closePixModal = document.getElementById('closePixModal');
+
+    pixBtn.addEventListener('click', () => {
+        pixModal.style.display = 'flex';
+        document.getElementById('qrcode').innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), {
+            text: `00020126360014br.gov.bcb.pix0114${PIX_KEY}520400005303986540450.005802BR5913Santyus-SJ6009Sao Paulo62240520123456789123456304E1F2`,
+            width: 200,
+            height: 200
+        });
+    });
+
+    closePixModal.addEventListener('click', () => {
+        pixModal.style.display = 'none';
+    });
+
+    document.getElementById('copyPixBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(PIX_KEY);
+        mostrarToast('✅ Chave PIX copiada: santyusj001@gmail.com');
+    });
+
+    // Eventos do checkout
+    document.getElementById('carrinhoBtn').addEventListener('click', abrirCheckout);
+    document.getElementById('closeCheckout').addEventListener('click', () => {
+        document.getElementById('checkoutModal').style.display = 'none';
+    });
+    document.getElementById('finalizarPedidoBtn').addEventListener('click', finalizarPedido);
+    
+    document.querySelectorAll('.payment-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            pagamentoSelecionado = opt.dataset.pagamento;
+            const cartTotal = document.getElementById('cartTotal');
+            let total = carrinho.reduce((sum, item) => sum + (item.preco * item.qtd), 0);
+            if (pagamentoSelecionado === 'pix') {
+                const desconto = total * 0.05;
+                cartTotal.innerHTML = `<strong>Subtotal: R$ ${total.toFixed(2)}</strong><br>
+                                       <span style="color:#2ecc71;">Desconto PIX (5%): -R$ ${desconto.toFixed(2)}</span><br>
+                                       <strong style="font-size:1.3rem;">Total: R$ ${(total - desconto).toFixed(2)}</strong>`;
+            } else {
+                cartTotal.innerHTML = `<strong style="font-size:1.3rem;">Total: R$ ${total.toFixed(2)}</strong>`;
+            }
+        });
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === pixModal) pixModal.style.display = 'none';
+        if (e.target === document.getElementById('checkoutModal')) document.getElementById('checkoutModal').style.display = 'none';
     });
 
     renderizarProdutos();
-
-    // Animação CSS
-    const style = document.createElement('style');
-    style.textContent = `@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`;
-    document.head.appendChild(style);
+    setInterval(() => {
+        renderizarProdutos();
+    }, 3000);
 </script>
 </body>
 </html>
