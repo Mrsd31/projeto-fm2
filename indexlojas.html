@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C&A Rações - Delivery de Qualidade</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --green-dark: #1a6e2e;
+    --green-mid: #25a244;
+    --green-light: #3ec95f;
+    --green-ultra: #7dea97;
+    --white: #ffffff;
+    --off-white: #f4fdf6;
+    --gray-light: #e8f5eb;
+    --gray-mid: #c5dfc9;
+    --text-dark: #0d2914;
+    --text-mid: #2a5535;
+    --accent-yellow: #f9d923;
+    --accent-orange: #ff7c2a;
+    --shadow-green: rgba(37, 162, 68, 0.25);
+    --font-head: 'Montserrat', sans-serif;
+    --font-body: 'Nunito', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--off-white);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--gray-light); }
+  ::-webkit-scrollbar-thumb { background: var(--green-mid); border-radius: 3px; }
+
+  /* ===== HERO / HEADER ===== */
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, #0d2914 0%, #1a6e2e 40%, #25a244 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(61,201,95,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(125,234,151,0.12) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* 3D floating blobs */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.18;
+    animation: float 8s ease-in-out infinite;
+  }
+  .blob-1 { width: 400px; height: 400px; background: #3ec95f; top: -100px; right: -100px; animation-delay: 0s; }
+  .blob-2 { width: 300px; height: 300px; background: #7dea97; bottom: 0; left: -80px; animation-delay: 3s; }
+  .blob-3 { width: 200px; height: 200px; background: #f9d923; top: 50%; right: 10%; animation-delay: 5s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(13,41,20,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(62,201,95,0.2);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-icon {
+    width: 46px; height: 46px;
+    background: linear-gradient(135deg, var(--green-light), var(--green-dark));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 4px 16px rgba(62,201,95,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .logo-icon::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 40%;
+    height: 60%;
+    background: rgba(255,255,255,0.3);
+    transform: rotate(30deg);
+    border-radius: 50%;
+  }
+
+  .logo-text { font-family: var(--font-head); font-weight: 900; font-size: 20px; color: white; line-height: 1.1; }
+  .logo-text span { color: var(--green-ultra); }
+  .logo-sub { font-size: 10px; color: var(--gray-mid); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+
+  .nav-actions { display: flex; align-items: center; gap: 12px; }
+
+  .cart-btn {
+    position: relative;
+    background: linear-gradient(135deg, var(--green-light), var(--green-mid));
+    border: none;
+    border-radius: 12px;
+    padding: 10px 16px;
+    color: white;
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 4px 18px rgba(62,201,95,0.4);
+    transition: all 0.2s;
+  }
+  .cart-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(62,201,95,0.5); }
+  .cart-badge {
+    position: absolute;
+    top: -8px; right: -8px;
+    background: var(--accent-yellow);
+    color: var(--text-dark);
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    font-size: 12px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    display: none;
+    animation: pop 0.3s ease;
+  }
+  @keyframes pop { 0% { transform: scale(0); } 60% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+  /* HERO CONTENT */
+  .hero-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px 40px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(125,234,151,0.15);
+    border: 1px solid rgba(125,234,151,0.4);
+    border-radius: 50px;
+    padding: 6px 16px;
+    color: var(--green-ultra);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    animation: fadeInDown 0.6s ease;
+  }
+
+  @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+  .hero-title {
+    font-family: var(--font-head);
+    font-size: clamp(36px, 8vw, 72px);
+    font-weight: 900;
+    color: white;
+    line-height: 1.05;
+    margin-bottom: 16px;
+    animation: fadeInUp 0.7s ease 0.1s both;
+  }
+  .hero-title span { 
+    color: var(--green-ultra); 
+    text-shadow: 0 0 40px rgba(125,234,151,0.5);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: rgba(255,255,255,0.75);
+    max-width: 480px;
+    margin-bottom: 36px;
+    line-height: 1.6;
+    animation: fadeInUp 0.7s ease 0.2s both;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeInUp 0.7s ease 0.3s both;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--green-light) 0%, var(--green-mid) 100%);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 16px 32px;
+    font-family: var(--font-body);
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 28px rgba(37,162,68,0.5), 0 0 0 0 rgba(62,201,95,0.4);
+    transition: all 0.3s;
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 36px rgba(37,162,68,0.6);
+  }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 16px;
+    padding: 14px 28px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+    display: flex; align-items: center; gap: 8px;
+    text-decoration: none;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+
+  /* 3D CARDS CONTAINER */
+  .hero-3d-cards {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 50px;
+    perspective: 1000px;
+    animation: fadeInUp 0.8s ease 0.5s both;
+    flex-wrap: wrap;
+  }
+
+  .mini-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(125,234,151,0.3);
+    border-radius: 20px;
+    padding: 16px 20px;
+    text-align: center;
+    min-width: 100px;
+    transform: rotateX(10deg);
+    transition: transform 0.3s;
+  }
+  .mini-card:hover { transform: rotateX(0deg) translateY(-5px); }
+  .mini-card i { font-size: 28px; color: var(--green-ultra); margin-bottom: 8px; display: block; }
+  .mini-card span { color: white; font-weight: 800; font-size: 13px; }
+
+  /* PROMO BANNER */
+  .promo-strip {
+    background: linear-gradient(90deg, var(--accent-yellow) 0%, var(--accent-orange) 100%);
+    padding: 12px 24px;
+    text-align: center;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 14px;
+    color: #1a0a00;
+    letter-spacing: 0.5px;
+    overflow: hidden;
+  }
+  .promo-strip-inner {
+    display: inline-flex;
+    gap: 60px;
+    animation: marquee 20s linear infinite;
+    white-space: nowrap;
+  }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* SECTION */
+  section { padding: 60px 20px; }
+  .section-title {
+    font-family: var(--font-head);
+    font-size: clamp(26px, 5vw, 40px);
+    font-weight: 900;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .section-title span { color: var(--green-mid); }
+  .section-sub { color: #5a7a60; font-size: 15px; margin-bottom: 36px; }
+
+  /* PHONE INFO */
+  .phone-bar {
+    background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+    color: white;
+    text-align: center;
+    padding: 14px;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .phone-bar a { color: var(--green-ultra); text-decoration: none; font-size: 20px; }
+
+  /* PROMOS SECTION */
+  .promos-section { background: var(--off-white); }
+  .promos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .promo-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(37,162,68,0.1);
+    transition: all 0.3s;
+    position: relative;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+  .promo-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px rgba(37,162,68,0.2);
+    border-color: var(--green-light);
+  }
+
+  .promo-card-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+    background: linear-gradient(135deg, #d4edda, #a8d5b5);
+  }
+
+  .promo-badge-tag {
+    position: absolute;
+    top: 14px; left: 14px;
+    background: var(--accent-orange);
+    color: white;
+    border-radius: 50px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .promo-card-body { padding: 18px; }
+  .promo-card-name {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 17px;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+  .promo-card-desc { font-size: 13px; color: #6a8a70; margin-bottom: 14px; line-height: 1.5; }
+  .promo-price-row { display: flex; align-items: center; justify-content: space-between; }
+  .promo-price-old { font-size: 13px; color: #aaa; text-decoration: line-through; }
+  .promo-price-new { font-family: var(--font-head); font-size: 22px; font-weight: 900; color: var(--green-dark); }
+  .add-btn {
+    background: linear-gradient(135deg, var(--green-light), var(--green-mid));
+    border: none;
+    border-radius: 12px;
+    padding: 10px 18px;
+    color: white;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .add-btn:hover { transform: scale(1.06); box-shadow: 0 4px 16px rgba(37,162,68,0.4); }
+
+  /* CATEGORIES */
+  .categories-nav {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 28px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .categories-nav::-webkit-scrollbar { display: none; }
+
+  .cat-btn {
+    flex-shrink: 0;
+    background: white;
+    border: 2px solid var(--gray-mid);
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .cat-btn.active, .cat-btn:hover {
+    background: var(--green-mid);
+    border-color: var(--green-mid);
+    color: white;
+    box-shadow: 0 4px 14px rgba(37,162,68,0.3);
+  }
+
+  /* MENU GRID */
+  .menu-section { background: var(--gray-light); }
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .menu-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    transition: all 0.3s;
+    cursor: pointer;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+  }
+  .menu-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 36px rgba(37,162,68,0.18);
+    border-color: var(--green-light);
+  }
+
+  .menu-card-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+  }
+
+  .menu-card-body { padding: 14px; flex: 1; display: flex; flex-direction: column; }
+  .menu-card-name {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+  }
+  .menu-card-brand { font-size: 12px; color: var(--green-mid); font-weight: 700; margin-bottom: 6px; }
+  .menu-card-desc { font-size: 12px; color: #7a9a80; line-height: 1.5; flex: 1; margin-bottom: 12px; }
+  .menu-card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .menu-price {
+    font-family: var(--font-head);
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--green-dark);
+  }
+  .menu-price small { font-size: 12px; font-weight: 600; color: #888; }
+
+  .qty-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--gray-light);
+    border-radius: 12px;
+    padding: 4px;
+  }
+  .qty-btn {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    border: none;
+    background: var(--green-mid);
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+    line-height: 1;
+  }
+  .qty-btn:hover { background: var(--green-dark); }
+  .qty-num {
+    min-width: 24px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--text-dark);
+  }
+
+  /* PERSONALIZATION MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1100;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: white;
+    border-radius: 28px 28px 0 0;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 24px;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  .modal-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 20px; }
+  .modal-title { font-family: var(--font-head); font-weight: 900; font-size: 22px; margin-bottom: 16px; }
+  .modal-img { width: 100%; height: 200px; object-fit: cover; border-radius: 16px; margin-bottom: 16px; }
+  .modal-price { font-family: var(--font-head); font-size: 28px; font-weight: 900; color: var(--green-dark); margin-bottom: 16px; }
+  .modal-label { font-weight: 800; font-size: 14px; color: var(--text-mid); margin-bottom: 10px; margin-top: 16px; display: block; }
+  .modal-sizes {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .size-opt {
+    border: 2px solid var(--gray-mid);
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    color: var(--text-dark);
+    background: white;
+  }
+  .size-opt.selected, .size-opt:hover {
+    border-color: var(--green-mid);
+    background: #e8f5eb;
+    color: var(--green-dark);
+  }
+  textarea.obs-input {
+    width: 100%;
+    border: 2px solid var(--gray-mid);
+    border-radius: 12px;
+    padding: 12px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    resize: none;
+    min-height: 80px;
+    color: var(--text-dark);
+    margin-top: 4px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  textarea.obs-input:focus { border-color: var(--green-mid); }
+
+  .modal-add-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--green-light), var(--green-dark));
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 18px;
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: 0.3s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .modal-add-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,162,68,0.4); }
+
+  /* CART DRAWER */
+  .cart-drawer {
+    position: fixed;
+    top: 0; right: -100%;
+    width: 100%;
+    max-width: 420px;
+    height: 100vh;
+    background: white;
+    z-index: 1200;
+    transition: right 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+  }
+  .cart-drawer.open { right: 0; }
+
+  .cart-header {
+    background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+    padding: 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .cart-header-title { font-family: var(--font-head); font-size: 20px; font-weight: 900; }
+  .close-cart-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 10px;
+    width: 36px; height: 36px;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .cart-items { flex: 1; overflow-y: auto; padding: 16px; }
+  .cart-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #aaa;
+  }
+  .cart-empty i { font-size: 60px; margin-bottom: 16px; display: block; color: #ddd; }
+  .cart-empty p { font-size: 16px; }
+
+  .cart-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--gray-light);
+    align-items: flex-start;
+    animation: fadeInUp 0.3s ease;
+  }
+  .cart-item-img {
+    width: 64px; height: 64px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+    flex-shrink: 0;
+  }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-weight: 800; font-size: 14px; margin-bottom: 3px; }
+  .cart-item-variant { font-size: 12px; color: var(--green-mid); font-weight: 700; }
+  .cart-item-obs { font-size: 11px; color: #999; font-style: italic; margin-top: 3px; }
+  .cart-item-price { font-family: var(--font-head); font-weight: 900; color: var(--green-dark); font-size: 15px; }
+  .remove-item-btn {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 2px;
+    transition: color 0.2s;
+  }
+  .remove-item-btn:hover { color: #e53e3e; }
+
+  .cart-footer {
+    padding: 16px;
+    border-top: 2px solid var(--gray-light);
+    background: white;
+  }
+  .cart-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .cart-total-label { font-weight: 700; color: #666; font-size: 15px; }
+  .cart-total-value { font-family: var(--font-head); font-weight: 900; font-size: 26px; color: var(--green-dark); }
+
+  .whatsapp-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 18px;
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    box-shadow: 0 6px 24px rgba(37,211,102,0.35);
+    transition: 0.3s;
+  }
+  .whatsapp-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(37,211,102,0.5); }
+
+  /* FLOATING BUTTONS */
+  .float-container {
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-end;
+  }
+
+  .float-wpp {
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 58px; height: 58px;
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(37,211,102,0.5);
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none;
+    transition: 0.3s;
+    animation: pulse-green 2s infinite;
+  }
+  @keyframes pulse-green {
+    0%, 100% { box-shadow: 0 6px 24px rgba(37,211,102,0.5), 0 0 0 0 rgba(37,211,102,0.4); }
+    50% { box-shadow: 0 6px 24px rgba(37,211,102,0.5), 0 0 0 14px rgba(37,211,102,0); }
+  }
+
+  .float-order {
+    background: linear-gradient(135deg, var(--green-light), var(--green-dark));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 22px;
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(37,162,68,0.45);
+    display: flex; align-items: center; gap: 8px;
+    transition: 0.3s;
+  }
+  .float-order:hover { transform: translateY(-2px); }
+
+  /* OVERLAY */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1150;
+    display: none;
+  }
+  .drawer-overlay.open { display: block; }
+
+  /* FOOTER */
+  footer {
+    background: var(--text-dark);
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+    padding: 32px 20px;
+    font-size: 14px;
+  }
+  footer strong { color: var(--green-ultra); }
+  .footer-logo { margin-bottom: 12px; font-family: var(--font-head); font-size: 22px; font-weight: 900; color: white; }
+  .footer-info { margin: 8px 0; }
+  .footer-info a { color: #25D366; text-decoration: none; font-weight: 700; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--green-dark);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 15px;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .hero-content { padding: 40px 20px 30px; }
+    .hero-3d-cards { gap: 10px; }
+    .mini-card { min-width: 80px; padding: 12px 14px; }
+    section { padding: 40px 16px; }
+    .menu-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .menu-card-img { height: 120px; }
+    .float-container { bottom: 16px; right: 14px; }
+  }
+
+  @media (max-width: 360px) {
+    .menu-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <a class="logo" href="#">
+    <div class="logo-icon">🐾</div>
+    <div>
+      <div class="logo-text">C<span>&</span>A</div>
+      <div class="logo-sub">Rações</div>
+    </div>
+  </a>
+  <div class="nav-actions">
+    <button class="cart-btn" onclick="openCart()">
+      <i class="fas fa-shopping-cart"></i>
+      Carrinho
+      <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== PHONE BAR ===== -->
+<div class="phone-bar">
+  <i class="fas fa-phone-alt"></i>
+  Loja nº 21 · Ligue: <a href="tel:2126617893">(21) 2661-7893</a>
+  &nbsp;·&nbsp;
+  <i class="fab fa-whatsapp" style="color:#7dea97"></i>
+  <a href="https://wa.me/5521266178930" style="color:#7dea97">WhatsApp</a>
+</div>
+
+<!-- ===== PROMO STRIP ===== -->
+<div class="promo-strip">
+  <div class="promo-strip-inner">
+    <span>🔥 FRETE GRÁTIS acima de R$150</span>
+    <span>🐶 Royal Canin com 20% OFF</span>
+    <span>🐱 Sachê Whiskas leve 4 pague 3</span>
+    <span>⚡ Pedido via WhatsApp em 2 minutos</span>
+    <span>🔥 FRETE GRÁTIS acima de R$150</span>
+    <span>🐶 Royal Canin com 20% OFF</span>
+    <span>🐱 Sachê Whiskas leve 4 pague 3</span>
+    <span>⚡ Pedido via WhatsApp em 2 minutos</span>
+  </div>
+</div>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <i class="fas fa-star"></i> DELIVERY RÁPIDO · LOJA Nº 21
+    </div>
+    <h1 class="hero-title">Nutrição que seu<br><span>pet merece</span> 🐾</h1>
+    <p class="hero-sub">Monte seu pedido, personalize e finalize direto pelo WhatsApp. Rápido, fácil e sem complicação!</p>
+    <div class="hero-ctas">
+      <a class="btn-primary" href="#menu" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">
+        <i class="fas fa-utensils"></i> Ver Cardápio
+      </a>
+      <a class="btn-secondary" href="https://wa.me/5521266178930">
+        <i class="fab fa-whatsapp"></i> Falar no WhatsApp
+      </a>
+    </div>
+    <div class="hero-3d-cards">
+      <div class="mini-card"><i class="fas fa-dog"></i><span>Cães</span></div>
+      <div class="mini-card"><i class="fas fa-cat"></i><span>Gatos</span></div>
+      <div class="mini-card"><i class="fas fa-fish"></i><span>Peixes</span></div>
+      <div class="mini-card"><i class="fas fa-feather-alt"></i><span>Aves</span></div>
+      <div class="mini-card"><i class="fas fa-bolt"></i><span>Combos</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROMOS ===== -->
+<section class="promos-section">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="section-title">🔥 Ofertas <span>Imperdíveis</span></div>
+    <div class="section-sub">Aproveite antes que acabe!</div>
+    <div class="promos-grid">
+
+      <div class="promo-card" onclick="openModal('combo1')">
+        <div class="promo-badge-tag">COMBO HOT</div>
+        <img class="promo-card-img" 
+          src="https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400&h=200&fit=crop&crop=center" 
+          alt="Ração Premium Cão" onerror="this.src='https://placehold.co/400x200/1a6e2e/white?text=Combo+Cão'">
+        <div class="promo-card-body">
+          <div class="promo-card-name">Combo Cão Feliz 15kg + Petisco</div>
+          <div class="promo-card-desc">Royal Canin Adult 15kg + 2 pacotes de petisco premium grátis</div>
+          <div class="promo-price-row">
+            <div>
+              <div class="promo-price-old">R$ 289,00</div>
+              <div class="promo-price-new">R$ 219,90</div>
+            </div>
+            <button class="add-btn" onclick="event.stopPropagation();addToCart({id:'combo1',name:'Combo Cão Feliz 15kg + Petisco',price:219.90,img:'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=80&h=80&fit=crop'})">
+              <i class="fas fa-plus"></i> Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="promo-card" onclick="openModal('combo2')">
+        <div class="promo-badge-tag">-30%</div>
+        <img class="promo-card-img" 
+          src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=200&fit=crop&crop=center" 
+          alt="Ração Gato" onerror="this.src='https://placehold.co/400x200/25a244/white?text=Ração+Gato'">
+        <div class="promo-card-body">
+          <div class="promo-card-name">Whiskas Gatos 3kg leve 4 pague 3</div>
+          <div class="promo-card-desc">Ração seca sabor frango para gatos adultos. Promoção relâmpago!</div>
+          <div class="promo-price-row">
+            <div>
+              <div class="promo-price-old">R$ 156,00</div>
+              <div class="promo-price-new">R$ 109,90</div>
+            </div>
+            <button class="add-btn" onclick="event.stopPropagation();addToCart({id:'combo2',name:'Whiskas Gatos 3kg leve 4 pague 3',price:109.90,img:'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=80&h=80&fit=crop'})">
+              <i class="fas fa-plus"></i> Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="promo-card" onclick="openModal('combo3')">
+        <div class="promo-badge-tag">KIT ESPECIAL</div>
+        <img class="promo-card-img" 
+          src="https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=400&h=200&fit=crop&crop=center" 
+          alt="Kit Pet" onerror="this.src='https://placehold.co/400x200/3ec95f/white?text=Kit+Pet'">
+        <div class="promo-card-body">
+          <div class="promo-card-name">Kit Filhote Completo</div>
+          <div class="promo-card-desc">Ração filhote 3kg + vermífugo + 6 sachês + coleira anti-pulgas</div>
+          <div class="promo-price-row">
+            <div>
+              <div class="promo-price-old">R$ 195,00</div>
+              <div class="promo-price-new">R$ 149,90</div>
+            </div>
+            <button class="add-btn" onclick="event.stopPropagation();addToCart({id:'combo3',name:'Kit Filhote Completo',price:149.90,img:'https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=80&h=80&fit=crop'})">
+              <i class="fas fa-plus"></i> Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== MENU ===== -->
+<section class="menu-section" id="menu">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="section-title">🐾 Nosso <span>Cardápio</span></div>
+    <div class="section-sub">Escolha, monte e peça pelo WhatsApp!</div>
+
+    <div class="categories-nav">
+      <button class="cat-btn active" onclick="filterCat('todos', this)"><i class="fas fa-th"></i> Todos</button>
+      <button class="cat-btn" onclick="filterCat('caes', this)"><i class="fas fa-dog"></i> Cães</button>
+      <button class="cat-btn" onclick="filterCat('gatos', this)"><i class="fas fa-cat"></i> Gatos</button>
+      <button class="cat-btn" onclick="filterCat('filhotes', this)"><i class="fas fa-paw"></i> Filhotes</button>
+      <button class="cat-btn" onclick="filterCat('peixes', this)"><i class="fas fa-fish"></i> Peixes & Aves</button>
+      <button class="cat-btn" onclick="filterCat('petiscos', this)"><i class="fas fa-bone"></i> Petiscos</button>
+      <button class="cat-btn" onclick="filterCat('higiene', this)"><i class="fas fa-soap"></i> Higiene</button>
+    </div>
+
+    <div class="menu-grid" id="menuGrid"></div>
+  </div>
+</section>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-handle"></div>
+    <img class="modal-img" id="modalImg" src="" alt="">
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-price" id="modalPrice"></div>
+    <span class="modal-label">Tamanho / Embalagem</span>
+    <div class="modal-sizes" id="modalSizes"></div>
+    <span class="modal-label">Observações</span>
+    <textarea class="obs-input" id="obsInput" placeholder="Ex: sem aditivos, sabor específico, urgência..."></textarea>
+    <button class="modal-add-btn" id="modalAddBtn">
+      <i class="fas fa-cart-plus"></i> Adicionar ao Carrinho
+    </button>
+  </div>
+</div>
+
+<!-- ===== CART DRAWER ===== -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <div class="cart-header-title"><i class="fas fa-shopping-bag"></i> Meu Pedido</div>
+    <button class="close-cart-btn" onclick="closeCart()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <i class="fas fa-shopping-basket"></i>
+      <p>Seu carrinho está vazio.<br>Adicione produtos ao pedido!</p>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span class="cart-total-label">Total do Pedido:</span>
+      <span class="cart-total-value" id="cartTotal">R$ 0,00</span>
+    </div>
+    <button class="whatsapp-btn" onclick="sendWhatsApp()">
+      <i class="fab fa-whatsapp" style="font-size:22px"></i>
+      Finalizar pelo WhatsApp
+    </button>
+  </div>
+</div>
+
+<!-- ===== FLOATING BUTTONS ===== -->
+<div class="float-container">
+  <a class="float-wpp" href="https://wa.me/5521266178930" target="_blank" title="WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+  <button class="float-order" onclick="openCart()">
+    <i class="fas fa-bolt"></i> Pedido Rápido
+  </button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-logo">🐾 C&A Rações</div>
+  <div class="footer-info">📍 Loja nº 21 · Rio de Janeiro</div>
+  <div class="footer-info">📞 <a href="tel:2126617893">(21) 2661-7893</a> &nbsp;|&nbsp; <a href="https://wa.me/5521266178930"><i class="fab fa-whatsapp"></i> WhatsApp</a></div>
+  <div style="margin-top:16px;font-size:12px;color:#555">© 2026 C&A Rações. Todos os direitos reservados.</div>
+</footer>
+
+<script>
+// ===== DATA =====
+const products = [
+  { id:'p1', cat:'caes', name:'Royal Canin Medium Adult 15kg', brand:'Royal Canin', desc:'Ração premium para cães adultos de raças médias. Alta digestibilidade.', price:249.90, img:'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400&h=200&fit=crop', sizes:['1kg','3kg','7,5kg','15kg'] },
+  { id:'p2', cat:'caes', name:'Golden Seleção Natural Frango 15kg', brand:'Golden', desc:'Ingredientes naturais sem corantes artificiais. Ideal para cães adultos.', price:189.90, img:'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=200&fit=crop', sizes:['3kg','10kg','15kg'] },
+  { id:'p3', cat:'caes', name:'Pedigree Adultos Carne 10,1kg', brand:'Pedigree', desc:'Sabor carne e legumes. Nutrição completa e balanceada.', price:99.90, img:'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=400&h=200&fit=crop', sizes:['2,7kg','10,1kg','18kg'] },
+  { id:'p4', cat:'gatos', name:'Whiskas Adultos Frango 3kg', brand:'Whiskas', desc:'Ração seca premium para gatos adultos. Sabor frango irresistível.', price:44.90, img:'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=200&fit=crop', sizes:['1kg','3kg','10,1kg'] },
+  { id:'p5', cat:'gatos', name:'Royal Canin Gatos Indoor 1,5kg', brand:'Royal Canin', desc:'Formulada para gatos que vivem em apartamentos. Controle de bolas de pelo.', price:89.90, img:'https://images.unsplash.com/photo-1529778873920-4da4926a72c2?w=400&h=200&fit=crop', sizes:['400g','1,5kg','4kg'] },
+  { id:'p6', cat:'gatos', name:'Sachês Whiskas Variedades 85g', brand:'Whiskas', desc:'Sachê úmido com caldo saboroso. Ótimo para complementar a dieta.', price:3.90, img:'https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=400&h=200&fit=crop', sizes:['Un. 85g','Pack 4un','Pack 12un'] },
+  { id:'p7', cat:'filhotes', name:'Royal Canin Mini Puppy 1kg', brand:'Royal Canin', desc:'Formulada para filhotes de raças mini até 10 meses.', price:59.90, img:'https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=400&h=200&fit=crop', sizes:['1kg','2,5kg','7,5kg'] },
+  { id:'p8', cat:'filhotes', name:'Golden Filhotes Premium 3kg', brand:'Golden', desc:'Frango e arroz para filhotes em crescimento. 100% natural.', price:79.90, img:'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=200&fit=crop', sizes:['1kg','3kg','10kg'] },
+  { id:'p9', cat:'peixes', name:'Alcon Koi Color 250g', brand:'Alcon', desc:'Realça a cor dos carpas koi. Fórmula com betacaroteno.', price:34.90, img:'https://images.unsplash.com/photo-1520637836993-a4e6e44e2dcd?w=400&h=200&fit=crop', sizes:['250g','500g','1kg'] },
+  { id:'p10', cat:'peixes', name:'Sera Vipan 1000ml', brand:'Sera', desc:'Flocos premium para peixes tropicais de água doce.', price:28.90, img:'https://images.unsplash.com/photo-1535591273668-578e31182c4f?w=400&h=200&fit=crop', sizes:['250ml','1000ml','2L'] },
+  { id:'p11', cat:'petiscos', name:'Bifinho Bichinho Premium 60g', brand:'DogBis', desc:'Petisco sabor carne para treinamento e premiação.', price:12.90, img:'https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=200&fit=crop', sizes:['60g','250g','500g'] },
+  { id:'p12', cat:'higiene', name:'Shampoo Sanol Neutro 500ml', brand:'Sanol', desc:'Shampoo pH neutro para cães e gatos. Hidrata e perfuma.', price:22.90, img:'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&h=200&fit=crop', sizes:['250ml','500ml','1L'] },
+];
+
+// ===== STATE =====
+let cart = [];
+let currentModalProduct = null;
+let selectedSize = '';
+
+// ===== RENDER MENU =====
+function renderMenu(filter = 'todos') {
+  const grid = document.getElementById('menuGrid');
+  const items = filter === 'todos' ? products : products.filter(p => p.cat === filter);
+  grid.innerHTML = items.map(p => `
+    <div class="menu-card" onclick="openModal('${p.id}')">
+      <img class="menu-card-img" src="${p.img}" alt="${p.name}" 
+        onerror="this.src='https://placehold.co/400x200/25a244/white?text=${encodeURIComponent(p.name)}'">
+      <div class="menu-card-body">
+        <div class="menu-card-brand">${p.brand}</div>
+        <div class="menu-card-name">${p.name}</div>
+        <div class="menu-card-desc">${p.desc}</div>
+        <div class="menu-card-footer">
+          <div class="menu-price">R$ ${p.price.toFixed(2).replace('.',',')}</div>
+          <button class="add-btn" onclick="event.stopPropagation();addToCart({id:'${p.id}',name:'${p.name}',price:${p.price},img:'${p.img}'})">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterCat(cat, btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMenu(cat);
+}
+
+// ===== MODAL =====
+function openModal(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  currentModalProduct = p;
+  selectedSize = p.sizes ? p.sizes[0] : '';
+  document.getElementById('modalImg').src = p.img;
+  document.getElementById('modalTitle').textContent = p.name;
+  document.getElementById('modalPrice').textContent = 'R$ ' + p.price.toFixed(2).replace('.',',');
+  document.getElementById('obsInput').value = '';
+  
+  const sizesEl = document.getElementById('modalSizes');
+  sizesEl.innerHTML = (p.sizes || []).map((s,i) => `
+    <button class="size-opt ${i===0?'selected':''}" onclick="selectSize(this,'${s}')">${s}</button>
+  `).join('');
+
+  document.getElementById('modalAddBtn').onclick = () => {
+    const obs = document.getElementById('obsInput').value;
+    addToCart({ id: p.id, name: p.name, price: p.price, img: p.img, variant: selectedSize, obs });
+    closeModal();
+  };
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function selectSize(btn, size) {
+  document.querySelectorAll('.size-opt').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedSize = size;
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modalOverlay')) {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+}
+
+// ===== CART =====
+function addToCart(item) {
+  const existing = cart.find(c => c.id === item.id && c.variant === (item.variant || ''));
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ ...item, qty: 1 });
+  }
+  updateCartUI();
+  showToast('✅ ' + item.name.split(' ').slice(0,3).join(' ') + ' adicionado!');
+}
+
+function removeFromCart(idx) {
+  cart.splice(idx, 1);
+  updateCartUI();
+  renderCartItems();
+}
+
+function updateCartUI() {
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const count = cart.reduce((s, i) => s + i.qty, 0);
+  
+  const badge = document.getElementById('cartBadge');
+  badge.style.display = count > 0 ? 'flex' : 'none';
+  badge.textContent = count;
+
+  document.getElementById('cartTotal').textContent = 'R$ ' + total.toFixed(2).replace('.',',');
+  renderCartItems();
+}
+
+function renderCartItems() {
+  const el = document.getElementById('cartItems');
+  if (!cart.length) {
+    el.innerHTML = `<div class="cart-empty"><i class="fas fa-shopping-basket"></i><p>Seu carrinho está vazio.<br>Adicione produtos ao pedido!</p></div>`;
+    return;
+  }
+  el.innerHTML = cart.map((item, i) => `
+    <div class="cart-item">
+      <img class="cart-item-img" src="${item.img}" alt="${item.name}" onerror="this.src='https://placehold.co/64x64/25a244/white?text=🐾'">
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        ${item.variant ? `<div class="cart-item-variant">${item.variant}</div>` : ''}
+        ${item.obs ? `<div class="cart-item-obs">📝 ${item.obs}</div>` : ''}
+        <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+          <div class="qty-control">
+            <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
+            <span class="qty-num">${item.qty}</span>
+            <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
+          </div>
+          <span class="cart-item-price">R$ ${(item.price * item.qty).toFixed(2).replace('.',',')}</span>
+        </div>
+      </div>
+      <button class="remove-item-btn" onclick="removeFromCart(${i})"><i class="fas fa-trash"></i></button>
+    </div>
+  `).join('');
+}
+
+function changeQty(idx, delta) {
+  cart[idx].qty += delta;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  updateCartUI();
+}
+
+function openCart() {
+  document.getElementById('cartDrawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+  renderCartItems();
+}
+
+function closeCart() {
+  document.getElementById('cartDrawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+
+// ===== WHATSAPP =====
+function sendWhatsApp() {
+  if (!cart.length) { showToast('⚠️ Carrinho vazio! Adicione produtos.'); return; }
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  
+  let msg = '🐾 *Olá! Quero fazer um pedido na C&A Rações (Loja 21)*\n\n';
+  msg += '📋 *MEU PEDIDO:*\n';
+  msg += '━━━━━━━━━━━━━━━━━\n';
+  
+  cart.forEach((item, i) => {
+    msg += `\n*${i+1}. ${item.name}*`;
+    if (item.variant) msg += `\n   📦 Tamanho: ${item.variant}`;
+    msg += `\n   🔢 Qtd: ${item.qty}x`;
+    msg += `\n   💰 R$ ${(item.price * item.qty).toFixed(2).replace('.',',')}`;
+    if (item.obs) msg += `\n   📝 Obs: ${item.obs}`;
+    msg += '\n';
+  });
+  
+  msg += '\n━━━━━━━━━━━━━━━━━\n';
+  msg += `💵 *TOTAL: R$ ${total.toFixed(2).replace('.',',')}*\n\n`;
+  msg += '📍 Aguardo confirmação de disponibilidade e forma de entrega. Obrigado! 🙏';
+
+  const phone = '5521266178930';
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== INIT =====
+renderMenu();
+</script>
+</body>
+</html>
