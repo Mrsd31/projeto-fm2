@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>santyu-sj PDV | Sistema de Ponto de Venda Inteligente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0a0a0a;
+            --primary-light: #1a1a1a;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --white: #ffffff;
+            --gray-50: #18181b;
+            --gray-100: #27272a;
+            --gray-200: #3f3f46;
+            --gray-300: #52525b;
+            --gray-400: #71717a;
+            --gray-500: #a1a1aa;
+            --gray-600: #d4d4d8;
+            --gray-700: #e4e4e7;
+            --gray-800: #f4f4f5;
+            --gray-900: #ffffff;
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #18181b;
+            --bg-card: #1f1f23;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            --radius-sm: 6px;
+            --radius: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #000000;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+        }
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5);
+            transform: translateY(-2px);
+            color: #000;
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--gray-400);
+        }
+        .btn-outline:hover {
+            background: var(--white);
+            color: #000;
+            border-color: var(--white);
+            transform: translateY(-2px);
+        }
+        .btn-outline-white {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        .btn-outline-white:hover {
+            background: var(--white);
+            color: #000;
+            border-color: var(--white);
+            transform: translateY(-2px);
+        }
+        .btn-lg {
+            padding: 18px 40px;
+            font-size: 1.1rem;
+        }
+        .btn-whatsapp {
+            background: #25D366;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
+        }
+        .btn-whatsapp:hover {
+            background: #1ebe5b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.5);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            margin-bottom: 16px;
+        }
+        .badge .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.6); }
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 8px;
+            display: block;
+        }
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+        .section-subtitle {
+            font-size: 1.15rem;
+            color: var(--gray-500);
+            max-width: 600px;
+            line-height: 1.7;
+        }
+
+        /* HEADER */
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid transparent;
+            transition: var(--transition);
+            padding: 16px 0;
+        }
+        .header.scrolled {
+            border-bottom-color: var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            padding: 10px 0;
+        }
+        .header .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+        .logo-icon {
+            width: 42px; height: 42px;
+            background: var(--accent);
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            color: #000;
+            font-size: 1.3rem; font-weight: 900;
+        }
+        .nav-links {
+            display: flex; align-items: center; gap: 28px; list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none; color: var(--gray-400); font-weight: 500;
+            font-size: 0.95rem; transition: var(--transition); position: relative;
+        }
+        .nav-links a:hover { color: var(--white); }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -4px; left: 0;
+            width: 0; height: 2px; background: var(--accent); border-radius: 2px;
+            transition: var(--transition);
+        }
+        .nav-links a:hover::after { width: 100%; }
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .mobile-toggle {
+            display: none; background: none; border: none;
+            cursor: pointer; padding: 8px; z-index: 1001;
+        }
+        .mobile-toggle span {
+            display: block; width: 26px; height: 3px;
+            background: var(--white); border-radius: 3px;
+            transition: var(--transition); margin: 5px 0;
+        }
+        .mobile-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+        .mobile-toggle.active span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+
+        /* HERO */
+        .hero {
+            padding: 160px 0 100px;
+            background: var(--bg-primary);
+            position: relative; overflow: hidden;
+            text-align: center;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; top: -300px; right: -200px;
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none;
+        }
+        .hero .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative; z-index: 1;
+        }
+        .hero-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .hero-content h1 {
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            font-weight: 900;
+            color: var(--white);
+            line-height: 1.1;
+            letter-spacing: -0.04em;
+            margin-bottom: 20px;
+        }
+        .hero-content h1 span {
+            background: linear-gradient(135deg, var(--accent), #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-content p {
+            font-size: 1.15rem;
+            color: var(--gray-400);
+            margin-bottom: 32px; line-height: 1.7;
+        }
+        .hero-buttons { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+        .hero-stats {
+            display: flex; gap: 30px; margin-top: 36px; flex-wrap: wrap; justify-content: center;
+        }
+        .hero-stat .number { font-size: 2rem; font-weight: 900; color: var(--accent); letter-spacing: -0.02em; }
+        .hero-stat .label { font-size: 0.85rem; color: var(--gray-400); font-weight: 500; }
+
+        /* FEATURES */
+        .features { padding: 100px 0; background: var(--bg-secondary); }
+        .features-header { text-align: center; margin-bottom: 60px; }
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+        .feature-card {
+            background: var(--bg-card); border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg); padding: 36px 28px;
+            transition: var(--transition); position: relative; overflow: hidden;
+        }
+        .feature-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--accent), #34d399);
+            transform: scaleX(0); transform-origin: left; transition: var(--transition);
+        }
+        .feature-card:hover {
+            border-color: transparent; box-shadow: var(--shadow-lg); transform: translateY(-6px);
+        }
+        .feature-card:hover::before { transform: scaleX(1); }
+        .feature-icon {
+            width: 56px; height: 56px; border-radius: var(--radius);
+            background: rgba(16, 185, 129, 0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; margin-bottom: 20px; transition: var(--transition);
+        }
+        .feature-card:hover .feature-icon { background: var(--accent); color: #000; }
+        .feature-card h3 { font-size: 1.2rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+        .feature-card p { font-size: 0.95rem; color: var(--gray-400); line-height: 1.6; }
+
+        /* PRICING */
+        .pricing { padding: 100px 0; background: var(--bg-secondary); }
+        .pricing-header { text-align: center; margin-bottom: 60px; }
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px;
+            max-width: 750px; margin: 0 auto;
+        }
+        .pricing-card {
+            background: var(--bg-card); border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg); padding: 40px 32px;
+            text-align: center; transition: var(--transition);
+            position: relative; color: var(--gray-300);
+        }
+        .pricing-card.featured {
+            border-color: var(--accent); box-shadow: var(--shadow-lg);
+            background: #1a2e1f; transform: scale(1.03);
+        }
+        .pricing-card.featured .popular-badge {
+            position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+            background: var(--accent); color: #000;
+            padding: 6px 20px; border-radius: 50px;
+            font-size: 0.8rem; font-weight: 700; white-space: nowrap;
+        }
+        .pricing-card h3 { font-size: 1.4rem; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+        .pricing-card .price { font-size: 3rem; font-weight: 900; color: var(--accent); margin: 16px 0 4px; letter-spacing: -0.03em; }
+        .pricing-card .price span { font-size: 1rem; font-weight: 500; color: var(--gray-500); }
+        .pricing-card .price-desc { font-size: 0.9rem; color: var(--gray-400); margin-bottom: 24px; }
+        .pricing-features { list-style: none; text-align: left; margin-bottom: 28px; }
+        .pricing-features li {
+            padding: 8px 0; font-size: 0.9rem; color: var(--gray-400);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .pricing-features li::before { content: '✓'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+        .pricing-card .btn-outline { border-color: var(--gray-400); color: var(--white); }
+        .pricing-card .btn-outline:hover { background: var(--white); color: #000; }
+
+        /* FAQ */
+        .faq { padding: 100px 0; background: var(--bg-secondary); }
+        .faq-header { text-align: center; margin-bottom: 50px; }
+        .faq-list { max-width: 750px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+        .faq-item {
+            background: var(--bg-card); border-radius: var(--radius);
+            border: 1px solid var(--gray-200); overflow: hidden; transition: var(--transition);
+        }
+        .faq-question {
+            width: 100%; background: none; border: none;
+            padding: 20px 24px; text-align: left; font-size: 1.05rem; font-weight: 600;
+            color: var(--white); cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between; gap: 16px;
+            transition: var(--transition);
+        }
+        .faq-question .faq-icon {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--gray-100); display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; transition: var(--transition);
+            flex-shrink: 0; color: var(--gray-400); line-height: 1;
+        }
+        .faq-item.active .faq-icon { background: var(--accent); color: #000; transform: rotate(45deg); }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
+        .faq-item.active .faq-answer { max-height: 300px; }
+        .faq-answer-inner { padding: 0 24px 20px; color: var(--gray-400); font-size: 0.95rem; line-height: 1.7; }
+
+        /* CONTATO */
+        .contact { padding: 100px 0; background: var(--bg-primary); }
+        .contact-header { text-align: center; margin-bottom: 50px; }
+        .contact-cards {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px;
+            max-width: 600px; margin: 0 auto;
+        }
+        .contact-card {
+            background: var(--bg-card); border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg); padding: 32px 24px;
+            text-align: center; transition: var(--transition);
+        }
+        .contact-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .contact-card .contact-icon { font-size: 2.2rem; margin-bottom: 12px; }
+        .contact-card h4 { font-size: 1.1rem; color: var(--white); margin-bottom: 8px; }
+        .contact-card a, .contact-card span {
+            font-size: 1rem; color: var(--accent); text-decoration: none;
+            font-weight: 600; word-break: break-all;
+        }
+        .contact-card a:hover { text-decoration: underline; }
+
+        /* CTA */
+        .cta {
+            padding: 90px 0;
+            background: linear-gradient(160deg, #0a0a0a 0%, #0f2b1a 100%);
+            color: var(--white); text-align: center;
+            position: relative; overflow: hidden;
+        }
+        .cta::before {
+            content: ''; position: absolute; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 60%);
+            top: -200px; right: -200px; border-radius: 50%; pointer-events: none;
+        }
+        .cta .container { position: relative; z-index: 1; }
+        .cta h2 { font-size: clamp(2rem, 4vw, 2.6rem); font-weight: 900; letter-spacing: -0.03em; margin-bottom: 16px; }
+        .cta p { font-size: 1.1rem; color: var(--gray-400); margin-bottom: 36px; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .cta-buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-box {
+            background: var(--bg-card); border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg); padding: 36px 28px;
+            max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;
+            color: var(--gray-300); position: relative;
+        }
+        .modal-box h3 { color: var(--white); margin-bottom: 16px; font-size: 1.4rem; }
+        .modal-box p, .modal-box li { margin-bottom: 10px; font-size: 0.95rem; line-height: 1.7; }
+        .modal-close {
+            position: absolute; top: 12px; right: 16px;
+            background: none; border: none; color: var(--white);
+            font-size: 1.8rem; cursor: pointer; line-height: 1;
+        }
+
+        /* FOOTER */
+        .footer { background: #000; color: var(--gray-400); padding: 50px 0 30px; font-size: 0.9rem; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .footer h4 { color: var(--white); font-weight: 700; margin-bottom: 16px; font-size: 0.95rem; letter-spacing: 0.02em; }
+        .footer a { color: var(--gray-400); text-decoration: none; transition: var(--transition); display: block; margin-bottom: 8px; }
+        .footer a:hover { color: var(--accent); }
+        .footer-bottom { border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 24px; text-align: center; font-size: 0.85rem; color: var(--gray-500); }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .hero { padding: 130px 0 70px; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+            .pricing-card.featured { transform: none; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .contact-cards { grid-template-columns: 1fr; max-width: 350px; }
+        }
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed; top: 0; right: -100%; width: 280px; height: 100vh;
+                background: var(--bg-primary); flex-direction: column;
+                padding: 100px 30px 40px; gap: 20px;
+                box-shadow: var(--shadow-xl); transition: var(--transition); z-index: 1000;
+            }
+            .nav-links.active { right: 0; }
+            .mobile-toggle { display: block; }
+            .header-actions .btn { display: none; }
+            .header-actions .btn-mobile-cta { display: inline-flex; padding: 10px 20px; font-size: 0.85rem; }
+            .features-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+            .hero-stats { gap: 20px; }
+            .hero-stat .number { font-size: 1.5rem; }
+            .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+            .pricing-grid { max-width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .btn { padding: 12px 24px; font-size: 0.9rem; }
+            .btn-lg { padding: 14px 28px; font-size: 1rem; }
+            .hero { padding: 110px 0 50px; }
+            .pricing-card { padding: 28px 20px; }
+            .pricing-card .price { font-size: 2.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header" id="header">
+        <div class="container">
+            <a href="#" class="logo">
+                <div class="logo-icon">S</div>
+                santyu-sj<span style="color:var(--accent);">PDV</span>
+            </a>
+            <nav>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#features">Funcionalidades</a></li>
+                    <li><a href="#pricing">Planos</a></li>
+                    <li><a href="#contact">Contato</a></li>
+                    <li><a href="#faq">Dúvidas</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="#pricing" class="btn btn-primary btn-mobile-cta" style="display:none;">Ver Planos</a>
+                <a href="#pricing" class="btn btn-primary">Teste Grátis</a>
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="badge"><span class="dot"></span> Sistema PDV completo para sua empresa</div>
+                <h1>O <span>PDV inteligente</span> que acelera suas vendas</h1>
+                <p>Frente de caixa rápida, controle de estoque, emissão de NFC-e e relatórios gerenciais em um só lugar. Tudo integrado e pronto para usar.</p>
+                <div class="hero-buttons">
+                    <a href="#pricing" class="btn btn-primary btn-lg">Teste Grátis por 7 Dias</a>
+                    <a href="#contact" class="btn btn-outline btn-lg">Falar com Consultor</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat"><div class="number">+3.200</div><div class="label">Empresas ativas</div></div>
+                    <div class="hero-stat"><div class="number">98%</div><div class="label">Satisfação</div></div>
+                    <div class="hero-stat"><div class="number">R$ 45M+</div><div class="label">Transacionados</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="features-header">
+                <span class="section-label">Funcionalidades</span>
+                <h2 class="section-title">Tudo que seu PDV precisa ter</h2>
+                <p class="section-subtitle">Agilidade no atendimento, controle total do estoque e gestão financeira integrada.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🖥️</div>
+                    <h3>Frente de Caixa Ágil</h3>
+                    <p>Interface touch screen, leitura de código de barras e atalhos inteligentes para vender muito mais rápido.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3>Controle de Estoque</h3>
+                    <p>Atualização em tempo real, alertas de estoque baixo e integração com fornecedores.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <h3>Emissão de NFC-e</h3>
+                    <p>Nota fiscal eletrônica direto do caixa, sem complicação. Totalmente integrado com a SEFAZ.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Relatórios Gerenciais</h3>
+                    <p>Dashboard com faturamento, produtos mais vendidos, lucratividade e desempenho da equipe.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3>Múltiplas Formas de Pagamento</h3>
+                    <p>Dinheiro, cartão e PIX. Conciliação automática e fechamento de caixa simplificado.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">☁️</div>
+                    <h3>100% Cloud</h3>
+                    <p>Acesse de qualquer lugar, com backup automático e atualizações constantes sem dor de cabeça.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="pricing-header">
+                <span class="section-label">Planos</span>
+                <h2 class="section-title">Planos que cabem no seu negócio</h2>
+                <p class="section-subtitle">Sem taxas escondidas. Cancele quando quiser.</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Básico</h3>
+                    <div class="price">R$ 130<span>/mês</span></div>
+                    <p class="price-desc">Ideal para pequenos negócios</p>
+                    <ul class="pricing-features">
+                        <li>1 caixa ativo</li>
+                        <li>Até 500 produtos</li>
+                        <li>Suporte por e-mail</li>
+                        <li>Relatórios básicos</li>
+                    </ul>
+                    <a href="#" class="btn btn-outline" style="width:100%;">Começar Agora</a>
+                </div>
+                <div class="pricing-card featured">
+                    <div class="popular-badge">⭐ Mais Popular</div>
+                    <h3>Profissional</h3>
+                    <div class="price">R$ 230<span>/mês</span></div>
+                    <p class="price-desc">Para lojas em crescimento</p>
+                    <ul class="pricing-features">
+                        <li>Até 3 caixas</li>
+                        <li>Produtos ilimitados</li>
+                        <li>Emissão de NFC-e</li>
+                        <li>Painel de métricas</li>
+                        <li>Suporte prioritário</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary" style="width:100%;">Teste Grátis 7 Dias</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTATO -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="contact-header">
+                <span class="section-label">Fale Conosco</span>
+                <h2 class="section-title">Entre em contato</h2>
+                <p class="section-subtitle">Nossa equipe está pronta para ajudar você a escolher o melhor plano.</p>
+            </div>
+            <div class="contact-cards">
+                <div class="contact-card">
+                    <div class="contact-icon">📧</div>
+                    <h4>E-mail</h4>
+                    <a href="mailto:santyusj001@gmail.com">santyusj001@gmail.com</a>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">📞</div>
+                    <h4>Telefone</h4>
+                    <a href="tel:+5521959416937">(21) 95941-6937</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="faq-header">
+                <span class="section-label">Dúvidas Frequentes</span>
+                <h2 class="section-title">Tem alguma pergunta?</h2>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question">Preciso de internet para usar o PDV?<span class="faq-icon">+</span></button>
+                    <div class="faq-answer"><div class="faq-answer-inner">Recomendamos conexão para recursos em nuvem e NFC-e, mas o sistema funciona offline e sincroniza os dados quando a internet voltar.</div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">O sistema emite nota fiscal?<span class="faq-icon">+</span></button>
+                    <div class="faq-answer"><div class="faq-answer-inner">Sim! Emissão de NFC-e diretamente pelo PDV, homologado nos principais estados. Basta configurar seu certificado digital.</div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">Posso usar em vários computadores?<span class="faq-icon">+</span></button>
+                    <div class="faq-answer"><div class="faq-answer-inner">Sim, de acordo com o plano escolhido. O plano Profissional permite até 3 caixas simultâneos.</div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">Tem teste grátis?<span class="faq-icon">+</span></button>
+                    <div class="faq-answer"><div class="faq-answer-inner">Oferecemos 7 dias de teste gratuito no plano Profissional, sem compromisso e sem pedir cartão de crédito.</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="container">
+            <h2>Pronto para modernizar seu ponto de venda?</h2>
+            <p>Experimente o santyu-sj PDV gratuitamente e veja como é fácil vender mais.</p>
+            <div class="cta-buttons">
+                <a href="#pricing" class="btn btn-primary btn-lg">Começar Teste Grátis</a>
+                <a href="https://wa.me/5521959416937?text=Olá, gostaria de falar com um consultor." target="_blank" rel="noopener" class="btn btn-whatsapp btn-lg">💬 Falar com Consultor</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a href="#" class="logo" style="margin-bottom:12px;display:inline-flex;">
+                        <div class="logo-icon">S</div>
+                        santyu-sj<span style="color:var(--accent);">PDV</span>
+                    </a>
+                    <p style="color:var(--gray-500);margin-top:8px;">Sistema de ponto de venda inteligente para impulsionar seu negócio.</p>
+                </div>
+                <div>
+                    <h4>Produto</h4>
+                    <a href="#features">Funcionalidades</a>
+                    <a href="#pricing">Planos</a>
+                    <a href="#contact">Contato</a>
+                </div>
+                <div>
+                    <h4>Suporte</h4>
+                    <a href="#" id="openHelp">Central de Ajuda</a>
+                    <a href="#" id="openTerms">Termos de Uso</a>
+                </div>
+            </div>
+            <div class="footer-bottom">© 2026 santyu-sj PDV. Todos os direitos reservados.</div>
+        </div>
+    </footer>
+
+    <!-- MODAL: Central de Ajuda -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal-box">
+            <button class="modal-close" id="closeHelp">&times;</button>
+            <h3>📚 Central de Ajuda</h3>
+            <p><strong>Como instalar o santyu-sj PDV?</strong><br>Basta acessar nosso site, criar sua conta e seguir o passo a passo do assistente de instalação. Em poucos minutos seu PDV estará funcionando.</p>
+            <p><strong>Como cadastrar produtos?</strong><br>No painel administrativo, vá em "Produtos" e clique em "Novo Produto". Preencha nome, preço, código de barras e imagem. Pronto!</p>
+            <p><strong>Como emitir NFC-e?</strong><br>Configure seu certificado digital na aba "Fiscal" e habilite a emissão. O sistema fará a comunicação com a SEFAZ automaticamente.</p>
+            <p><strong>Perdi minha senha. E agora?</strong><br>Na tela de login, clique em "Esqueci minha senha" e siga as instruções enviadas para seu e-mail.</p>
+            <p><strong>Precisa de mais ajuda?</strong><br>Entre em contato pelo e-mail santyusj001@gmail.com ou pelo telefone (21) 95941-6937.</p>
+        </div>
+    </div>
+
+    <!-- MODAL: Termos de Uso -->
+    <div class="modal-overlay" id="termsModal">
+        <div class="modal-box">
+            <button class="modal-close" id="closeTerms">&times;</button>
+            <h3>📄 Termos de Uso</h3>
+            <p><strong>1. Aceitação dos Termos</strong><br>Ao utilizar o santyu-sj PDV, você concorda com estes termos. Caso não concorde, não utilize o serviço.</p>
+            <p><strong>2. Uso do Sistema</strong><br>O sistema deve ser utilizado apenas para fins legais de gestão de vendas. É proibido o uso para atividades ilícitas.</p>
+            <p><strong>3. Planos e Pagamentos</strong><br>Os planos são contratados mensalmente. O cancelamento pode ser feito a qualquer momento, sem multa.</p>
+            <p><strong>4. Privacidade</strong><br>Seus dados são armazenados de forma segura e não são compartilhados com terceiros sem autorização.</p>
+            <p><strong>5. Suporte</strong><br>Oferecemos suporte técnico por e-mail e telefone durante horário comercial para todos os planos.</p>
+        </div>
+    </div>
+
+    <script>
+        // MOBILE MENU
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navLinks = document.getElementById('navLinks');
+        mobileToggle.addEventListener('click', () => {
+            mobileToggle.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileToggle.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // HEADER SCROLL
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // FAQ
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.querySelector('.faq-question').addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+                if (!isActive) item.classList.add('active');
+            });
+        });
+
+        // MODAIS
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('openHelp').addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal('helpModal');
+        });
+        document.getElementById('openTerms').addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal('termsModal');
+        });
+        document.getElementById('closeHelp').addEventListener('click', () => closeModal('helpModal'));
+        document.getElementById('closeTerms').addEventListener('click', () => closeModal('termsModal'));
+
+        document.getElementById('helpModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal('helpModal');
+        });
+        document.getElementById('termsModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal('termsModal');
+        });
+
+        // REVEAL ANIMATIONS
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+        document.querySelectorAll('.feature-card, .pricing-card, .contact-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // MOBILE CTA BUTTON
+        const mobileCtaBtn = document.querySelector('.btn-mobile-cta');
+        const handleResize = () => {
+            mobileCtaBtn.style.display = window.innerWidth <= 768 ? 'inline-flex' : 'none';
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+    </script>
+</body>
+</html>
