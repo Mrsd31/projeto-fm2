@@ -249,19 +249,31 @@
         .mobile-toggle.active span:nth-child(2) { opacity: 0; }
         .mobile-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
 
-        /* HERO */
+        /* HERO com fundo temático de PDV */
         .hero {
             padding: 160px 0 100px;
             background: var(--bg-primary);
             position: relative; overflow: hidden;
             text-align: center;
+            background-image: radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.06) 0%, transparent 35%),
+                              radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.04) 0%, transparent 40%);
         }
+        /* Ícones de PDV flutuando no fundo */
         .hero::before {
-            content: '';
-            position: absolute; top: -300px; right: -200px;
-            width: 700px; height: 700px;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
-            border-radius: 50%; pointer-events: none;
+            content: "🖥️🧾📊🛒📦💳";
+            position: absolute;
+            top: 10%;
+            left: -5%;
+            width: 110%;
+            height: 80%;
+            font-size: 4rem;
+            white-space: pre-wrap;
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 0;
+            transform: rotate(-5deg);
+            letter-spacing: 20px;
+            line-height: 1.8;
         }
         .hero .container {
             display: flex;
@@ -290,7 +302,19 @@
         .hero-content p {
             font-size: 1.15rem;
             color: var(--gray-400);
-            margin-bottom: 32px; line-height: 1.7;
+            margin-bottom: 12px; line-height: 1.7;
+        }
+        .hero-content .pdv-explanation {
+            font-size: 1rem;
+            color: var(--gray-500);
+            margin-bottom: 24px;
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 3px solid var(--accent);
+            padding: 12px 18px;
+            border-radius: 0 8px 8px 0;
+            text-align: left;
+            display: inline-block;
+            max-width: 600px;
         }
         .hero-buttons { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
         .hero-stats {
@@ -525,6 +549,9 @@
                 <div class="badge"><span class="dot"></span> Sistema PDV completo para sua empresa</div>
                 <h1>O <span>PDV inteligente</span> que acelera suas vendas</h1>
                 <p>Frente de caixa rápida, controle de estoque, emissão de NFC-e e relatórios gerenciais em um só lugar. Tudo integrado e pronto para usar.</p>
+                <div class="pdv-explanation">
+                    💡 <strong>O que é um PDV?</strong> Ponto de Venda (PDV) é o sistema que gerencia todas as operações do caixa da sua loja: registra vendas, controla o estoque em tempo real, emite notas fiscais e organiza os recebimentos. É o coração da gestão do seu negócio.
+                </div>
                 <div class="hero-buttons">
                     <a href="#pricing" class="btn btn-primary btn-lg">Teste Grátis por 7 Dias</a>
                     <a href="#contact" class="btn btn-outline btn-lg">Falar com Consultor</a>
